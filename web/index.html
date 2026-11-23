@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dekki</title>
+    <meta name="color-scheme" content="dark light" />
+    <script>
+      // Theme before first paint (same logic as web/theme.js): setting System | Dark | Light, resolved into data-theme.
+      (function () {
+        var s = 'system';
+        try { s = localStorage.getItem('dekki.theme') || 'system'; } catch (e) {}
+        var light = false;
+        try { light = matchMedia('(prefers-color-scheme: light)').matches; } catch (e) {}
+        var r = s === 'light' || (s !== 'dark' && light) ? 'light' : 'dark';
+        document.documentElement.dataset.theme = r;
+        document.documentElement.dataset.themeSetting = s;
+        // The Mac app adds "DekkiMac" to the user agent (mac/main.swift): room for the traffic lights, see styles/base.css.
+        if (/DekkiMac/.test(navigator.userAgent)) document.documentElement.dataset.shell = 'mac';
+      })();
+    </script>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/main.jsx"></script>
+  </body>
+</html>

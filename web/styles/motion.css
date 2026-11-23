@@ -1,0 +1,25 @@
+/* Motion (phase 4). Everything is under 200ms. prefers-reduced-motion switches the CSS animations off (base.css) and the
+   JS-driven ones (motion.jsx: glide, fade-in) check it themselves. The flash and the tick are colour / opacity / small shifts only. */
+
+/* A row whose agent just finished or now needs you: a short wash of the status colour, twice */
+.row[data-flash="needs"] { animation: row-flash-needs 200ms ease-out 2; }
+.row[data-flash="done"] { animation: row-flash-done 200ms ease-out 2; }
+@keyframes row-flash-needs { 0% { background: color-mix(in srgb, var(--am) 32%, transparent); } 100% { background: transparent; } }
+@keyframes row-flash-done { 0% { background: color-mix(in srgb, var(--gr) 30%, transparent); } 100% { background: transparent; } }
+.row.selected[data-flash="needs"] { animation-name: row-flash-needs-sel; }
+.row.selected[data-flash="done"] { animation-name: row-flash-done-sel; }
+@keyframes row-flash-needs-sel { 0% { background: color-mix(in srgb, var(--am) 32%, var(--b3)); } 100% { background: var(--b3); } }
+@keyframes row-flash-done-sel { 0% { background: color-mix(in srgb, var(--gr) 30%, var(--b3)); } 100% { background: var(--b3); } }
+
+/* Count tick: the number slides in from below */
+.tick { display: inline-block; animation: tick-in 180ms ease-out; }
+@keyframes tick-in { from { opacity: 0; transform: translateY(5px); } }
+
+/* Mac app only (html[data-shell="mac"], set from the user agent): the title bar is transparent and the content runs under it,
+   so the sidebar head and the main header start below the 20px strip the app uses for dragging the window (DragStripWebView). */
+:root[data-shell="mac"] .sb-head { padding-top: calc(var(--s3) + 14px); }
+:root[data-shell="mac"] .sidebar.collapsed .sb-head { padding-top: calc(var(--s3) + 14px); }
+:root[data-shell="mac"] .main-head { height: 60px; padding-top: 8px; }
+
+/* the list is the offset parent that motion.jsx measures against */
+.list { position: relative; }

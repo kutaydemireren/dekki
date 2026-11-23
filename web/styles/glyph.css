@@ -1,0 +1,17 @@
+/* Status glyphs (StatusGlyph.jsx): one shape per state. 14px. */
+.g { width: 14px; height: 14px; flex: none; display: inline-block; position: relative; box-sizing: border-box; }
+.g-working { border-radius: 50%; border: 2px solid var(--ac-soft); border-top-color: var(--ac); animation: g-spin .9s linear infinite; }
+.g-needs::before { content: ""; position: absolute; inset: 2px; border-radius: 50%; background: var(--am); animation: g-halo 2s ease-out infinite; }
+.g-done { border-radius: 50%; background: var(--gr-soft); }
+.g-done::after { content: ""; position: absolute; left: 4.5px; top: 2.5px; width: 3px; height: 6px; border: solid var(--gr); border-width: 0 1.6px 1.6px 0; transform: rotate(45deg); }
+.g-failed { border-radius: 50%; background: var(--rd-soft); }
+.g-failed::before, .g-failed::after { content: ""; position: absolute; left: 6px; top: 3px; width: 1.6px; height: 8px; background: var(--rd); transform: rotate(45deg); border-radius: 1px; }
+.g-failed::after { transform: rotate(-45deg); }
+.g-stalled { border-radius: 50%; border: 2px dashed var(--am); animation: g-spin 6s linear infinite; }
+.g-stopped { border-radius: 50%; border: 2px solid var(--f3); }
+/* Idle (StatusGlyph active={false}): a count of 0 shows the same shape, calm and dimmed. The one place that rule lives. */
+.g.idle, .g.idle::before, .g.idle::after { animation: none; }
+.g.idle { opacity: .4; }
+@keyframes g-spin { to { transform: rotate(360deg); } }
+@keyframes g-halo { 0% { box-shadow: 0 0 0 0 var(--halo); } 70%, 100% { box-shadow: 0 0 0 7px transparent; } }
+@media (prefers-reduced-motion: reduce) { .g, .g::before, .g::after { animation: none !important; } }

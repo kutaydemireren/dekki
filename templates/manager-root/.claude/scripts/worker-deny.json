@@ -1,0 +1,43 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "S='__MANAGER_ROOT__/.claude/scripts/check-report.sh'; [ -x \"$S\" ] || exit 0; exec \"$S\""
+          }
+        ]
+      }
+    ]
+  },
+  "permissions": {
+    "deny": [
+      "Bash(git push)",
+      "Bash(git push origin)",
+      "Bash(git push -f*)",
+      "Bash(git push --force*)",
+      "Bash(git push * -f)",
+      "Bash(git push * -f *)",
+      "Bash(git push * --force*)",
+      "Bash(git push * --mirror*)",
+      "Bash(git push * --delete*)",
+      "Bash(git push * --all*)",
+      "Bash(git push --delete*)",
+      "Bash(git push --mirror*)",
+      "Bash(git push --all*)",
+      "Bash(git push * HEAD)",
+      "Bash(git push * __BRANCH__)",
+      "Bash(git push * __BRANCH__ *)",
+      "Bash(git push * *:__BRANCH__)",
+      "Bash(git push * *refs/heads/__BRANCH__*)",
+      "Bash(git push * +*)",
+      "Bash(git * push *)",
+      "Bash(git * push)",
+      "Bash(*sh -c *git*push*)",
+      "Bash(eval *git*push*)",
+      "Bash(*env *git push*)",
+      "Bash(xargs *git*push*)"
+    ]
+  }
+}

@@ -1,0 +1,57 @@
+/* Saved prompts panel: covers the main pane (the Session tab stays mounted underneath) */
+.prompts { position: absolute; inset: 0; z-index: 5; display: flex; background: var(--b1); }
+.prompts-side { width: 300px; flex: none; background: var(--b0); border-right: 1px solid var(--ln); display: flex; flex-direction: column; min-height: 0; }
+.prompts-tools { display: flex; gap: 6px; padding: 8px; align-items: center; }
+.prompts-tools .spacer { flex: 1; }
+.prompts-search { padding: 0 8px 8px; }
+.prompts-list { flex: 1; overflow-y: auto; font-size: var(--fs-sm); min-height: 0; }
+.prompts-empty { padding: 10px 12px; color: var(--f2); font-size: var(--fs-sm); }
+.prompts-empty code, .dialog code { background: var(--ln); padding: 0 4px; }
+.prompts-root { padding: 6px 12px; color: var(--f2); font-size: var(--fs-2xs); word-break: break-all; border-top: 1px solid var(--ln); }
+/* Skill usage: per-session tab and the all-time panel */
+.skills-tab { padding: var(--s6) 32px; max-width: 800px; font-size: var(--fs-md); }
+.skills-tab h4 { margin: 16px 0 6px; font-size: var(--fs-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--f2); }
+.skills-tab summary { cursor: pointer; color: var(--f2); font-size: var(--fs-sm); margin-bottom: 6px; }
+.stat-row { display: flex; gap: 28px; color: var(--f2); }
+.stat-row b { color: var(--f1); font-size: 22px; letter-spacing: -0.02em; font-weight: var(--fw-bold); margin-right: 4px; }
+.stat-dim { color: var(--f2); font-size: var(--fs-sm); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips.dim .chip-skill { color: var(--f2); }
+.chip-skill { background: var(--b2); border: 1px solid var(--ln); border-radius: var(--r-pill); padding: 3px 10px; font-size: var(--fs-sm); }
+.chip-skill b { color: var(--ac); font-weight: 600; margin-left: 4px; }
+.skills-panel .skills-main { flex: 1; display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.skills-head { display: flex; align-items: center; gap: var(--s3); height: 52px; flex: none; padding: 0 var(--s4) 0 var(--s5); border-bottom: 1px solid var(--ln); background: var(--b1); font-size: var(--fs-sm); }
+.skills-head > b { font-size: 14px; font-weight: var(--fw-bold); }
+.skills-head .spacer { flex: 1; }
+.skills-head b, .skills-head label, .skills-head span { white-space: nowrap; }
+.skills-head select { max-width: 220px; }
+.skills-scroll { flex: 1; overflow: auto; min-height: 0; }
+.skills-table { border-collapse: collapse; width: 100%; font-size: var(--fs-sm); }
+.skills-table th { text-align: left; position: sticky; top: 0; background: var(--b2); color: var(--f2); font-weight: 600; padding: 6px 12px; border-bottom: 1px solid var(--ln); }
+.skills-table th .sort-btn { all: unset; cursor: pointer; display: inline-flex; gap: 4px; align-items: center; white-space: nowrap; }
+.skills-table th .sort-btn:hover { color: var(--f1); }
+.skills-table th .sort-btn:focus-visible { outline: 1px solid var(--f2); outline-offset: 2px; }
+.sort-arrow { font-size: 9px; display: inline-block; min-width: 9px; }
+.skills-table td { padding: 5px 12px; border-bottom: 1px solid var(--ln); }
+.skills-table th:not(:first-child), .skills-table td:not(:first-child) { text-align: right; white-space: nowrap; }
+.skills-table tr.never td { color: var(--f2); }
+.p-row { display: flex; align-items: center; gap: 6px; padding: 3px 8px; cursor: pointer; user-select: none; -webkit-user-select: none; white-space: nowrap; border-left: 2px solid transparent; }
+.p-row:hover { background: var(--b2); }
+.p-row.selected { background: var(--b3); border-left-color: var(--ac); }
+.p-row.dir { color: var(--f2); }
+.p-name { overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; }
+.p-sub { color: var(--f2); font-size: var(--fs-xs); overflow: hidden; text-overflow: ellipsis; }
+.p-dirty { color: var(--am); }
+.prompts-main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.prompts-bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 8px 12px; border-bottom: 1px solid var(--ln); background: var(--b2); }
+.prompts-bar .path { flex: 1 1 160px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--f2); }
+.prompts-banner { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; padding: 6px 12px; background: var(--am-soft); color: var(--am-ink); font-size: var(--fs-sm); }
+.prompt-editor { flex: 1; min-height: 0; margin: 12px; width: auto; resize: none; font: 13px/1.5 var(--mono); }
+.prompts-main .placeholder { margin: auto; }
+
+.p-row.dir.drop { background: var(--ac-soft); outline: 1px dashed var(--ac); outline-offset: -2px; }
+.prompts-list.drop-root { outline: 1px dashed var(--ac); outline-offset: -3px; }
+.prompts-hints { margin: 0 8px 8px; padding: 6px 10px; background: var(--b3); border: 1px solid var(--ln2); border-radius: 5px; font-size: var(--fs-sm); color: var(--f1); }
+.prompts-hints ul { margin: 0; padding-left: 16px; display: flex; flex-direction: column; gap: 5px; }
+.prompts-hints code { background: var(--ln); padding: 0 4px; border-radius: 3px; }
+.prompts-tools button { white-space: nowrap; padding: 3px 8px; }

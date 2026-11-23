@@ -1,0 +1,27 @@
+{
+  "version": 2,
+  "preferences": {
+    "replyStyle": {
+      "short": "- Keep replies short: answer first, under about 150 words, details only when needed.",
+      "detailed": "- Give detailed replies: explain what was done and why, with the evidence, in full sentences."
+    },
+    "autonomy": {
+      "outward": "- Ask before outward-facing or irreversible actions (pushes, pull requests, releases, deletes, anything that touches a live system); go ahead with local, reversible work.",
+      "ask-all": "- Ask before making any change: say what you plan to do and wait for a yes before delegating or editing anything.",
+      "rare": "- Ask rarely: decide from context and defaults, and ask only when the answer would be hard to undo or the request cannot be understood."
+    },
+    "prs": {
+      "me": "- The user opens pull requests. Workers push a named branch and stop; you report the branch.",
+      "workers-draft": "- Workers open draft pull requests for their branch. Never mark one ready for review and never merge."
+    },
+    "language": {
+      "same": "- Reply in the language the user writes in.",
+      "custom": "- Reply in {{language}}."
+    }
+  },
+  "guardrails": {
+    "neverTouch": "- Never touch: {{text}}. If a task needs it, stop and ask the user.",
+    "secretsDir": "- Secrets live in `{{path}}`. Agents may use them, never read them: load a file inside the command that needs it, never open, print or copy its contents."
+  },
+  "docs": "- Docs folder: `{{docsDir}}` (outside every project repo). Its `README.md` has the index and the rules; each project has a subfolder `{{docsDir}}/<project>/` with START-HERE, SPEC, DECISIONS, LOG and INBOX.\n- Read a project's `START-HERE.md` and the newest `LOG.md` entry before you scope or delegate for it. Every worker brief points to the same files and asks the worker to update them in the same session."
+}

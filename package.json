@@ -1,0 +1,53 @@
+{
+  "name": "dekki",
+  "version": "0.1.0",
+  "description": "A local web UI for Claude Code background agents: agent list, full history and live sessions, driven by the claude CLI.",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kutaydemireren/dekki.git"
+  },
+  "homepage": "https://github.com/kutaydemireren/dekki#readme",
+  "bugs": {
+    "url": "https://github.com/kutaydemireren/dekki/issues"
+  },
+  "license": "MIT",
+  "author": "Kutay Demireren",
+  "keywords": [
+    "dekki",
+    "claude-code",
+    "ai-agents",
+    "background-agents",
+    "agent-manager",
+    "dashboard",
+    "web-ui",
+    "orchestration",
+    "developer-tools"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "postinstall": "chmod +x node_modules/node-pty/prebuilds/*/spawn-helper || true",
+    "start": "node server/start.js",
+    "dev": "vite build --watch & node --watch server/index.js",
+    "build": "vite build",
+    "test": "node --test server/test/*.test.js"
+  },
+  "dependencies": {
+    "node-pty": "^1.1.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.3.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-unicode11": "^0.8.0",
+    "@xterm/xterm": "^5.5.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^9.1.0",
+    "remark-gfm": "^4.0.1",
+    "vite": "^8.3.8"
+  }
+}
