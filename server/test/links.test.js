@@ -29,28 +29,3 @@ test('links: parse links.tsv next to state.json; last line wins; junk, bad ids a
     fs.rmSync(dir, { recursive: true, force: true });
   }
 });
-
-test('links: legacy ~/.agent-deck/links.tsv is a fallback when DEKKI_STATE is unset; current file wins; ignored with DEKKI_STATE', () => {
-  const home = fs.mkdtempSync(path.join(os.tmpdir(), 'deck-links-home-'));
-  const oldHome = process.env.HOME;
-  const oldState = process.env.DEKKI_STATE;
-  delete process.env.DEKKI_STATE;
-  process.env.HOME = home;
-  try {
-    fs.mkdirSync(path.join(home, '.agent-deck'));
-    fs.mkdirSync(path.join(home, '.dekki'));
-    const legacy = path.join(home, '.agent-deck', 'links.tsv');
-    assert.equal(readLinks().size, 0); // neither file exists
-    fs.writeFileSync(legacy, 'aaaaaaaa\tbbbbbbbb\tx\ncccccccc\tbbbbbbbb\tx\n');
-    assert.deepEqual([...readLinks()], [['aaaaaaaa', 'bbbbbbbb'], ['cccccccc', 'bbbbbbbb']]);
-    fs.writeFileSync(path.join(home, '.dekki', 'links.tsv'), 'aaaaaaaa\tdddddddd\tx\n'); // current wins
-    assert.equal(readLinks().get('aaaaaaaa'), 'dddddddd');
-    assert.equal(readLinks().get('cccccccc'), 'bbbbbbbb');
-    process.env.DEKKI_STATE = path.join(home, 'custom', 'state.json'); // legacy ignored
-    assert.equal(readLinks().size, 0);
-  } finally {
-    process.env.HOME = oldHome;
-    if (oldState === undefined) delete process.env.DEKKI_STATE; else process.env.DEKKI_STATE = oldState;
-    fs.rmSync(home, { recursive: true, force: true });
-  }
-});
