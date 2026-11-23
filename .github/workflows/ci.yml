@@ -14,7 +14,7 @@ jobs:
     # (Finder, notifications, folder chooser) are macOS-specific.
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
           node-version: 22
