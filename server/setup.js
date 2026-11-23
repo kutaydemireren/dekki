@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { readState } from './state.js';
 import { activeAccount, rootOf, expandHome, listAccounts, configDirOf, claudeEnv } from './accounts.js';
 import { checkRootPath } from './root.js';
+import { linksPath } from './links.js';
 
 export const CONFIG_REL = '.claude/harness.json';
 export const MANIFEST_REL = '.claude/harness.manifest.json';
@@ -778,6 +779,15 @@ export async function runHealth({ state = readState(), home = os.homedir(), exec
     const line = (r.stderr || r.stdout).split('\n').map((l) => l.trim()).filter(Boolean).pop() || '';
     add('delegate', 'delegate.sh --check passes', !r.e, !r.e ? (r.stdout.split('\n').map((l) => l.trim()).filter(Boolean).pop() || 'Config and rendering are fine.') : line.slice(0, 200) || 'The check failed.', /usage|unknown|not supported/i.test(line) ? 'This copy of delegate.sh is older than the wizard. Set up again to update it.' : 'Fix what it reports, then check again.');
   } else add('delegate', 'delegate.sh --check passes', false, 'delegate.sh is missing.', run);
+  // Workers only nest under their manager when delegate.sh records links where Dekki reads them (links.js).
+  if (fs.existsSync(delegate)) {
+    const links = linksPath();
+    const shown = links.startsWith(`${home}${path.sep}`) ? `~/${path.relative(home, links)}` : links;
+    const needle = `${path.basename(path.dirname(links))}/${path.basename(links)}`;
+    let text = '';
+    try { text = fs.readFileSync(delegate, 'utf8'); } catch { /* unreadable: reported as not found */ }
+    add('links', 'delegate.sh records worker links where Dekki reads them', text.includes(needle), text.includes(needle) ? shown : 'This delegate.sh records worker links somewhere Dekki does not read, so workers will not nest under their manager.', `Replace it with the current template's .claude/scripts/delegate.sh, or change its links path to ${shown}.`);
+  }
   let deny = null;
   try { deny = JSON.parse(fs.readFileSync(path.join(root, '.claude/worker-settings.json'), 'utf8')); } catch { /* none */ }
   if (!deny) add('deny', 'Deny rules block pushes to protected branches', false, 'The rendered rules (.claude/worker-settings.json) are missing.', 'Run delegate.sh --check, or Set up again.');
