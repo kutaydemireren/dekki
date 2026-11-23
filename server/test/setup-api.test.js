@@ -12,7 +12,7 @@ const tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dekki-setupap
 const homeDir = path.join(tmp, 'home');
 fs.mkdirSync(path.join(homeDir, 'Projects'), { recursive: true });
 process.env.HOME = homeDir;
-process.env.DEKKI_STATE = path.join(tmp, 'state.json');
+process.env.DEKKI_STATE = path.join(tmp, '.dekki', 'state.json'); // the health check looks for this dir name in delegate.sh
 process.env.DEKKI_TEMPLATE = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'setup-template');
 const bin = path.join(tmp, 'bin');
 fs.mkdirSync(bin);

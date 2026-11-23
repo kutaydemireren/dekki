@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # fixture: --check prints one line and succeeds; anything else fails like the real usage line
+# links are recorded in $HOME/.dekki/links.tsv (the health check looks for this path)
 if [[ "${1:-}" == "--check" ]]; then
   # render the deny rules the way the real script does (health reads this file)
   d="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"

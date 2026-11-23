@@ -10,7 +10,7 @@ import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dekki-setup-test-')));
-process.env.DEKKI_STATE = path.join(tmp, 'state.json');
+process.env.DEKKI_STATE = path.join(tmp, '.dekki', 'state.json'); // the health check looks for this dir name in delegate.sh
 const FIXTURE = path.join(path.dirname(fileURLToPath(import.meta.url)), 'fixtures', 'setup-template');
 process.env.DEKKI_TEMPLATE = FIXTURE;
 
@@ -725,7 +725,7 @@ test('health: all green on a set-up folder, unslop is only an info', async () =>
   const h = await healthyRoot();
   const r = await S.runHealth(h.ctx);
   assert.equal(r.ok, true, JSON.stringify(r.items.filter((i) => i.status === 'fail')));
-  assert.deepEqual(r.items.map((i) => i.id), ['playbook', 'scripts', 'config', 'docs', 'claude', 'delegate', 'deny', 'unslop', 'trust']);
+  assert.deepEqual(r.items.map((i) => i.id), ['playbook', 'scripts', 'config', 'docs', 'claude', 'delegate', 'links', 'deny', 'unslop', 'trust']);
   assert.equal(item(r, 'unslop').status, 'info');
   assert.match(item(r, 'delegate').detail, /ok: fine/);
   assert.equal(item(r, 'deny').status, 'ok');
@@ -789,6 +789,20 @@ test('health: config problems, missing script, missing or weak deny rules, no ro
   assert.equal(none.items[0].id, 'root');
   const gone = await S.runHealth({ state: stateFor(path.join(tmp, 'gone')), home, exec: okExec() });
   assert.match(gone.items[0].detail, /Missing/);
+});
+
+test('health: delegate.sh that records links elsewhere fails with a fix; the right path passes', async () => {
+  const h = await healthyRoot();
+  assert.equal(item(await S.runHealth(h.ctx), 'links').status, 'ok');
+  const script = path.join(h.root, '.claude/scripts/delegate.sh');
+  fs.writeFileSync(script, '#!/bin/sh\necho "$1" >> "$HOME/.old-place/links.tsv"\n', { mode: 0o755 });
+  const r = await S.runHealth(h.ctx);
+  assert.equal(item(r, 'links').status, 'fail');
+  assert.match(item(r, 'links').detail, /does not read, so workers will not nest/);
+  assert.match(item(r, 'links').fix, /current template.*links\.tsv/);
+  assert.ok(!item(r, 'links').fix.includes('\n'));
+  fs.writeFileSync(script, '#!/bin/sh\necho "$1" >> "$HOME/.dekki/links.tsv"\n', { mode: 0o755 });
+  assert.equal(item(await S.runHealth(h.ctx), 'links').status, 'ok');
 });
 
 test('globToRegExp and unprotectedBranches', () => {

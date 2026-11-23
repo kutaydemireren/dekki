@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 
 const tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dekki-setupfix-test-')));
 test.after(() => fs.rmSync(tmp, { recursive: true, force: true }));
-process.env.DEKKI_STATE = path.join(tmp, 'state.json');
+process.env.DEKKI_STATE = path.join(tmp, '.dekki', 'state.json'); // the health check looks for this dir name in delegate.sh
 delete process.env.DEKKI_TEMPLATE; // the real template unless a test passes its own env
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const FIXTURE = path.join(HERE, 'fixtures', 'setup-template');
