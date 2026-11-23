@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { keyMode, stepId, nextNeedingId, pinnedOrder } from '../../web/shortcuts.js';
+import { keyMode, panelFor, stepId, nextNeedingId, pinnedOrder } from '../../web/shortcuts.js';
 
 const el = (tagName, extra = {}) => ({ tagName, ...extra });
 const ev = (key, o = {}) => ({ key, metaKey: false, ctrlKey: false, altKey: false, shiftKey: false, target: el('BODY'), ...o });
@@ -51,4 +51,13 @@ test('pinnedOrder follows the list order, pinned agents only', () => {
   const agents = [mk('old', { lastActivityAt: 1 }), mk('run', { state: 'working' }), mk('ask', { needsInput: true }), mk('x')];
   assert.deepEqual(pinnedOrder(agents, { pinned: ['old', 'run', 'ask', 'gone'] }), ['ask', 'run', 'old']);
   assert.deepEqual(pinnedOrder(agents, {}), []);
+});
+
+test('panelFor maps Cmd+B / Shift+S / Shift+P to the tree, skills and prompts panels only', () => {
+  assert.equal(panelFor('b', false), 'tree');
+  assert.equal(panelFor('B', false), 'tree');
+  assert.equal(panelFor('s', true), 'skills');
+  assert.equal(panelFor('S', true), 'skills');
+  assert.equal(panelFor('p', true), 'prompts');
+  for (const [k, s] of [['b', true], ['s', false], ['p', false], ['k', true], ['Enter', false], [undefined, false]]) assert.equal(panelFor(k, s), null, `${k} ${s}`);
 });
