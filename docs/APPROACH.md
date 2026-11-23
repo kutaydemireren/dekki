@@ -44,6 +44,16 @@ Dekki never reads your docs folder for another account; each account gets its ow
 - **Change the docs rules**: the docs folder's `README.md` holds them (size caps, how to archive decisions, how to compress the log). Edit it; workers are told to follow it.
 - **Add your own skills**: put them in the Claude config directory of the account that should have them, or in a project's own `.claude/skills`.
 
+## If you already have your own setup
+
+You do not have to run the wizard. Take only the parts you like: `classify-change.sh` reads `.claude/harness.json` only when it exists and otherwise falls back to its built-in sensitive paths, and the docs rules are a plain `README.md` you can copy into your own docs folder.
+
+If you do run it on a folder that already has files, it never overwrites an existing file. An existing `CLAUDE.md` with no setup markers is left untouched unless you tick the option to add the setup blocks to the end. That option is off by default, and the review screen shows the text so you can paste it yourself instead. When the file already has the three marked blocks, only those are rewritten.
+
+The wizard records what it installed in `.claude/harness.manifest.json`, with a hash per file. When you run a newer version, files you did not edit are updated, and files you edited are flagged and left alone. For `CLAUDE.md`, the new playbook text is saved next to it as `CLAUDE.md.new`. Nothing of yours is overwritten; you decide what to copy over.
+
+Before anything is written, the review screen lists what would be created, left alone, outdated or modified, and the counts at the top.
+
 ## How to expand
 
 The pattern that works for me is: give agents somewhere to put what they learn, and read it later. For example, add a `FINDINGS.md` to a project's docs and add one line to the playbook: "When you learn something about this project that is not obvious from the code (how a service really behaves, a trap, a fact you verified), add it to FINDINGS.md with how you checked it, and say 'unverified' when you did not." Then workers report discoveries into one file instead of burying them in a transcript, and I can read the file when I want to know what the agents have found out. The same idea works for a `GLOSSARY.md`, a `RUNBOOK.md` or a list of known flaky tests.
