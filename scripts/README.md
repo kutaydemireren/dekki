@@ -13,6 +13,7 @@ Browser checks start headless Edge or Chrome. The default is the macOS Microsoft
 | `setup-wizard-browser-check.mjs` | Browser check of the setup wizard (four screens, dark and light, health result). Starts its own deck, prints screenshot paths. | No: temp HOME and state, a fixture template and a stub `claude`. |
 | `manager-changes-browser-check.mjs [screenshot-dir]` | Browser check of the manager's Changes tab. Starts its own demo-mode deck. | No: demo mode, temp state. |
 | `manager-status-browser-check.mjs` | Browser check of the manager status line. Starts its own deck. | No: temp state and a stub `claude`. |
+| `shortcuts-browser-check.mjs` | Browser check of `Cmd+B`, `Cmd+Shift+S` and `Cmd+Shift+P` (toggle the folder tree, skill usage, saved prompts). Starts its own demo-mode deck. | No: demo mode, temp state. |
 | `notify-links-browser-check.mjs` | Checks cross-account notifications and deep links. Starts its own deck, notifications off. | No: temp state and a stub `claude`. |
 | `demo-screenshots.mjs <label> [out-dir]` | Screenshots of the main states from a demo-mode deck. | No: demo mode never calls `claude`. |
 | `template-dry-run.sh` | Dry run of the manager folder template with a stub `claude`. | No: all temp. |

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { MOD, SHIFT } from './shortcuts.js';
 import ThemeButton from './ThemeButton.jsx';
 import { FolderTreeIcon, SkillsIcon, PromptsIcon, BellIcon, PlusIcon } from './icons.jsx';
 
@@ -45,9 +46,9 @@ export default function Sidebar({ multi, accounts, activeAccount, accountColor, 
       {error && !collapsed && <div className="error">{error}</div>}
       <div className="sb-body" hidden={collapsed}>{children}</div>
       <footer className="sb-foot" hidden={collapsed}>
-        <button className={`icon-btn ghost${showTree ? ' on' : ''}`} title="Folder tree" aria-label="Folder tree" aria-pressed={showTree} onClick={onTree}><FolderTreeIcon /></button>
-        <button className={`icon-btn ghost${showSkills ? ' on' : ''}`} title="Skill usage over all sessions" aria-label="Skill usage over all sessions" aria-pressed={showSkills} onClick={onSkills}><SkillsIcon /></button>
-        <button className={`icon-btn ghost${showPrompts ? ' on' : ''}`} title="Saved prompts" aria-label="Saved prompts" aria-pressed={showPrompts} onClick={onPrompts}><PromptsIcon /></button>
+        <button className={`icon-btn ghost${showTree ? ' on' : ''}`} title={`Folder tree (${MOD}B)`} aria-label="Folder tree" aria-pressed={showTree} onClick={onTree}><FolderTreeIcon /></button>
+        <button className={`icon-btn ghost${showSkills ? ' on' : ''}`} title={`Skill usage over all sessions (${MOD}${SHIFT}S)`} aria-label="Skill usage over all sessions" aria-pressed={showSkills} onClick={onSkills}><SkillsIcon /></button>
+        <button className={`icon-btn ghost${showPrompts ? ' on' : ''}`} title={`Saved prompts (${MOD}${SHIFT}P)`} aria-label="Saved prompts" aria-pressed={showPrompts} onClick={onPrompts}><PromptsIcon /></button>
         <span className="spacer" />
         <ThemeButton />
         <button className="icon-btn ghost" title={notify ? 'macOS notifications on (needs input, finished). Click to turn off' : 'macOS notifications off. Click to turn on'} aria-label="macOS notifications" aria-pressed={notify} onClick={onNotify}><BellIcon off={!notify} /></button>
