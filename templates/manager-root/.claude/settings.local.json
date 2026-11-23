@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(.claude/scripts/delegate.sh:*)",
+      "Bash(.claude/scripts/project-setup.sh:*)",
+      "Bash(.claude/scripts/classify-change.sh:*)",
+      "Bash(claude logs:*)",
+      "Bash(claude agents:*)",
+      "Bash(claude stop:*)"
+    ]
+  }
+}

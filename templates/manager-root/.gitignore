@@ -1,0 +1,14 @@
+# Manager files only: ignore everything at the root, then allow the few files the manager needs.
+# Project folders are their own repos (or loose assets) and never show up here.
+# .claude/harness.json (your settings), the rendered worker settings and the manifest stay ignored.
+/*
+!/.gitignore
+!/CLAUDE.md
+!/.claude/
+/.claude/*
+!/.claude/skills/
+!/.claude/scripts/
+!/.claude/docs-templates/
+!/.claude/setup/
+!/.claude/settings.local.json
+.DS_Store

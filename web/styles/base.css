@@ -1,0 +1,128 @@
+/* Base: design tokens, fonts, type scale, reset, scrollbars and the button / input / chip primitives.
+   Per-area files (sidebar, main, history, dialogs, panels) use these tokens and never raw hex colours.
+   WebKit-safe CSS only (the Mac app is WKWebView). */
+
+/* Fonts: self-hosted variable fonts (SIL OFL 1.1, licence texts next to the files in public/fonts). */
+@font-face { font-family: 'Inter'; font-style: normal; font-weight: 100 900; font-display: swap; src: url('/fonts/inter-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'JetBrains Mono'; font-style: normal; font-weight: 100 800; font-display: swap; src: url('/fonts/jetbrains-mono-latin-wght-normal.woff2') format('woff2'); }
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces: b0 sidebar, b1 main, b2 raised (headers, cards, dialogs), b3 hover / selected / controls */
+  --b0: #0d0e12; --b1: #13141a; --b2: #1b1c24; --b3: #242632;
+  --b3-hover: #2e3040;
+  /* Lines */
+  --ln: rgba(255, 255, 255, .07); --ln2: rgba(255, 255, 255, .12);
+  /* Text: f1 primary, f2 secondary, f3 tertiary (hints only) */
+  --f1: #e8e9ee; --f2: #a2a6b6; --f3: #6b7083;
+  /* Accent = alive / selected. Amber = you are needed. Green = done. Red = broke. */
+  --ac: #8c99ff; --ac-soft: rgba(140, 153, 255, .15); --on-ac: #0d0e12;
+  --am: #f2b45c; --am-soft: rgba(242, 180, 92, .13);
+  --gr: #5fd3a0; --gr-soft: rgba(95, 211, 160, .13);
+  --rd: #ff7676; --rd-soft: rgba(255, 118, 118, .13);
+  /* Readable text on the soft status backgrounds */
+  --gr-ink: #b5ecd2; --rd-ink: #ffc2c2; --am-ink: #f7d9a8;
+  --addbg: rgba(95, 211, 160, .13); --delbg: rgba(255, 118, 118, .13);
+  /* Answer text colours (calmer versions come with the History redesign) */
+  --md-head: #a7b1ff; --md-path: #b4b4f0; --md-code: #e2b88a; --md-warn: #e8a45c;
+  --ac-2: #6d78e8; /* second stop of the brand mark gradient */
+  --halo: rgba(242, 180, 92, .55); /* pulse ring of the needs-you glyph */
+  --sb-thumb: rgba(255, 255, 255, .22); --sb-thumb-hover: rgba(255, 255, 255, .38);
+  --scrim: rgba(5, 6, 10, .6);
+  --shadow: 0 6px 24px rgba(0, 0, 0, .45);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, .4);
+  /* One colour per account position (account bar) */
+  --acct-1: #8c99ff; --acct-2: #f2b45c; --acct-3: #5fd3a0; --acct-4: #d291f2;
+
+  /* Shape and rhythm: 4px grid, radii 6 / 8 / 12 */
+  --r1: 6px; --r2: 8px; --r3: 12px; --r-pill: 999px;
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px; --s6: 24px;
+  --t-fast: 120ms; --t-enter: 200ms;
+
+  /* Type: Inter for the UI, JetBrains Mono for code, ids and the terminal */
+  --ui: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --fs-2xs: 10px; --fs-xs: 11px; --fs-sm: 12px; --fs-md: 13px; --fs-lg: 15px; --fs-xl: 18px;
+  --fw-normal: 400; --fw-medium: 500; --fw-bold: 600;
+}
+
+/* Light theme: values from assets/ui-redesign-mock.html (.deck[data-theme="light"]). index.html / theme.js set
+   data-theme on <html> to the resolved value (dark | light) before first paint. Status colours are darker so
+   text on the pale surfaces keeps contrast. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --b0: #e9ebf1; --b1: #fbfbfd; --b2: #ffffff; --b3: #eef0f6;
+  --b3-hover: #e2e5ee;
+  --ln: rgba(20, 22, 40, .08); --ln2: rgba(20, 22, 40, .14);
+  --f1: #1a1b22; --f2: #565a6c; --f3: #7d8296;
+  --ac: #4f5de0; --ac-soft: rgba(79, 93, 224, .11); --on-ac: #ffffff; --ac-2: #3b48c4;
+  --am: #b36f08; --am-soft: rgba(217, 140, 20, .13);
+  --gr: #17895c; --gr-soft: rgba(23, 137, 92, .11);
+  --rd: #cc3a3a; --rd-soft: rgba(204, 58, 58, .10);
+  --gr-ink: #0f6a47; --rd-ink: #a82a2a; --am-ink: #7a4a05;
+  --addbg: rgba(23, 137, 92, .11); --delbg: rgba(204, 58, 58, .10);
+  --md-head: #3b48c4; --md-path: #4f5de0; --md-code: #9a5a12; --md-warn: #b36f08;
+  --halo: rgba(179, 111, 8, .45);
+  --sb-thumb: rgba(20, 22, 40, .22); --sb-thumb-hover: rgba(20, 22, 40, .4);
+  --scrim: rgba(20, 22, 40, .35);
+  --shadow: 0 8px 28px rgba(20, 22, 40, .16);
+  --shadow-sm: 0 1px 4px rgba(20, 22, 40, .12);
+  --acct-1: #4f5de0; --acct-2: #b36f08; --acct-3: #17895c; --acct-4: #9a4cc4;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+/* The app is pinned to the viewport and can never scroll as a page (overflow: clip also blocks the
+   programmatic scrolling that focus/selection can trigger). Only inner panes scroll. */
+html, body { overflow: clip; }
+body { background: var(--b1); color: var(--f1); font: var(--fw-normal) var(--fs-md)/1.25 var(--ui); -webkit-font-smoothing: antialiased; }
+code, pre, kbd, samp { font-family: var(--mono); }
+a { color: var(--ac); } /* the default link blue is unreadable on the dark surfaces */
+::selection { background: var(--ac-soft); }
+
+/* WebKit-style scrollbars on purpose: they are always visible (not the auto-hiding overlay bars) and the
+   standard scrollbar-width/scrollbar-color would switch Safari back to overlay bars. 8px, transparent track,
+   a pill thumb with a 2px transparent edge so it reads thin but never disappears. */
+::-webkit-scrollbar { width: 8px; height: 8px; background: transparent; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--sb-thumb); border-radius: var(--r-pill); border: 2px solid transparent; background-clip: padding-box; min-height: 28px; }
+::-webkit-scrollbar-thumb:hover { background: var(--sb-thumb-hover); background-clip: padding-box; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+.placeholder { margin: auto; color: var(--f2); }
+.error { background: var(--rd-soft); color: var(--rd-ink); padding: 6px 12px; font-size: var(--fs-sm); }
+
+/* Primitives: button, input, chip */
+button { background: var(--b3); color: var(--f1); border: 1px solid var(--ln2); border-radius: var(--r1); padding: 3px 10px; font: inherit; cursor: pointer; transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast); }
+button:hover { background: var(--b3-hover); }
+button:focus-visible { outline: 2px solid var(--ac); outline-offset: 1px; }
+button.primary { background: var(--ac); border-color: var(--ac); color: var(--on-ac); font-weight: var(--fw-bold); }
+button.primary:hover { background: color-mix(in srgb, var(--ac), #fff 14%); border-color: transparent; }
+button.ghost { background: transparent; border-color: transparent; color: var(--f2); }
+button.ghost:hover { background: var(--b3); color: var(--f1); }
+button:disabled { opacity: 0.5; cursor: default; }
+input[type=text], textarea, select { background: var(--b0); color: var(--f1); border: 1px solid var(--ln2); border-radius: var(--r1); padding: 5px 8px; font: inherit; width: 100%; transition: border-color var(--t-fast), box-shadow var(--t-fast); }
+input[type=text]::placeholder, textarea::placeholder { color: var(--f3); }
+input[type=text]:focus, textarea:focus, select:focus { outline: none; border-color: var(--ac); box-shadow: 0 0 0 3px var(--ac-soft); }
+textarea { min-height: 90px; resize: vertical; }
+input[type=checkbox], input[type=radio] { accent-color: var(--ac); }
+/* Chip: small pill for facts (project, branch, counts). Tones: ac, am, gr, rd. */
+.chip { display: inline-flex; align-items: center; gap: var(--s1); padding: 0 var(--s2); height: 20px; border-radius: var(--r-pill); border: 1px solid var(--ln2); background: transparent; color: var(--f2); font-size: var(--fs-xs); white-space: nowrap; }
+.chip.ac { color: var(--ac); background: var(--ac-soft); border-color: transparent; }
+.chip.am { color: var(--am); background: var(--am-soft); border-color: transparent; }
+.chip.gr { color: var(--gr); background: var(--gr-soft); border-color: transparent; }
+.chip.rd { color: var(--rd); background: var(--rd-soft); border-color: transparent; }
+.mono { font-family: var(--mono); }
+kbd { font: var(--fs-xs) var(--mono); padding: 0 5px; border: 1px solid var(--ln2); border-bottom-width: 2px; border-radius: 4px; color: var(--f2); }
+
+.icon-btn { width: 30px; height: 30px; padding: 0 !important; display: inline-flex; align-items: center; justify-content: center; flex: none; }
+.icon-btn:focus-visible { outline: 2px solid var(--ac); outline-offset: 2px; }
+.icon-btn.primary:focus-visible { outline-color: var(--f1); }
+
+@keyframes pulse { 50% { opacity: 0.35; } }
+
+/* Motion off for people who ask for it (also stops the working-dot pulse) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

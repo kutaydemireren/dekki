@@ -1,0 +1,128 @@
+/* History tab. Reading column ~760px, 14px / 1.65 body. Colours come from the tokens (base.css); calm markdown:
+   headings in text colour with weight, neutral inline code, accent only for paths and links. */
+.hbar { position: absolute; top: 0; left: 0; right: 0; height: 40px; z-index: 5; display: flex; align-items: center; gap: var(--s2); padding: 0 var(--s6); background: var(--b1); border-bottom: 1px solid var(--ln); }
+.hbar .lb { color: var(--f3); font-size: var(--fs-sm); }
+.history { position: absolute; inset: 40px 0 0 0; overflow-y: auto; }
+.history.has-pin { top: 70px; } /* room for the pinned prompt row (30px): it never covers content */
+.hist { max-width: 760px; margin: 0 auto; padding: var(--s5) var(--s6) 60px; }
+.sticky-prompt { position: absolute; top: 40px; left: 0; right: 0; z-index: 4; display: flex; gap: var(--s2); height: 30px; box-sizing: border-box; align-items: center; padding: 0 var(--s6); background: var(--b2); border-bottom: 1px solid var(--ln2); color: var(--f1); cursor: pointer; box-shadow: var(--shadow-sm); }
+.sticky-prompt:hover { background: var(--b3); }
+.sticky-prompt .sp-mark { color: var(--ac); flex: none; }
+.sticky-prompt .sp-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.history .empty { color: var(--f2); text-align: center; margin-top: 60px; font-size: var(--fs-lg); }
+.msg { margin: 14px 0; }
+.msg.user { margin: 6px 0 22px; padding: var(--s3) 14px; border-radius: var(--r3); background: var(--b2); border: 1px solid var(--ln); }
+.msg .who { font-size: var(--fs-xs); color: var(--f3); margin-bottom: 4px; letter-spacing: 0.02em; }
+.msg.user .who { margin-bottom: 4px; }
+.msg .time { font-size: var(--fs-xs); color: var(--f3); margin-left: var(--s2); }
+.msg.assistant .who { display: none; } /* the reading column is Claude's voice; only the user's prompts carry a label */
+.pasted { margin: 6px 0; padding: 4px 8px 6px; background: var(--b0); border-left: 2px solid var(--ln2); border-radius: 4px; }
+.pasted-tag { font-size: var(--fs-2xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--f3); }
+.pasted pre { margin: 3px 0 0; font: 12px var(--mono); white-space: pre-wrap; word-break: break-word; max-height: 420px; overflow: auto; }
+.pasted summary { cursor: pointer; display: flex; gap: var(--s2); align-items: baseline; }
+.pasted .pasted-n { font-size: var(--fs-xs); color: var(--f2); }
+.pasted .pasted-first { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 11.5px var(--mono); color: var(--f2); }
+.pasted[open] .pasted-first { display: none; }
+
+/* Assistant markdown */
+.md { font-size: 14px; line-height: 1.65; word-break: break-word; }
+.md > :first-child { margin-top: 0; }
+.md > :last-child { margin-bottom: 0; }
+.md p { margin: 0 0 8px; }
+.md h1, .md h2, .md h3, .md h4 { margin: 1.1em 0 0.4em; line-height: 1.3; color: var(--f1); font-weight: var(--fw-bold); }
+.md h1 { font-size: 1.3em; } .md h2 { font-size: 1.15em; } .md h3 { font-size: 1.05em; } .md h4 { font-size: 1em; color: var(--f2); }
+.md strong { color: var(--f1); font-weight: var(--fw-bold); }
+.md em { color: var(--f1); }
+.md strong.path { color: var(--ac); }
+.md li::marker { color: var(--f3); }
+.md li > ul, .md li > ol { margin: 0.1em 0; }
+.md ul, .md ol { margin: 0.4em 0; padding-left: 1.6em; }
+.md li { margin: 0.15em 0; }
+.md li > p { margin: 0.2em 0; }
+.md a { color: var(--ac); text-decoration: none; }
+.md a:hover { text-decoration: underline; }
+.md code { font: 0.9em var(--mono); }
+.md code.ic { color: var(--f1); background: var(--b3); padding: 1px 6px; border-radius: 5px; }
+.md code.ic.path { color: var(--ac); background: none; padding: 0; font-weight: var(--fw-normal); }
+.md pre { background: var(--b0); padding: var(--s2) var(--s3); border-radius: var(--r1); overflow-x: auto; margin: 0; }
+.md pre code { background: none; padding: 0; font-size: var(--fs-sm); white-space: pre; }
+.md blockquote { margin: 0.5em 0; padding: 2px 0 2px var(--s3); border-left: 2px solid var(--ln2); color: var(--f2); }
+.md hr { border: 0; border-top: 1px solid var(--ln); margin: 0.9em 0; }
+.md table { border-collapse: collapse; margin: 0.6em 0; display: block; overflow-x: auto; max-width: 100%; }
+.md th, .md td { border: 1px solid var(--ln2); padding: 4px 10px; text-align: left; vertical-align: top; }
+.md th { background: var(--b2); color: var(--f1); font-weight: var(--fw-bold); }
+.md tbody tr:nth-child(even) td { background: color-mix(in srgb, var(--f1) 3%, transparent); }
+.md input[type=checkbox] { margin-right: 6px; }
+.md img { max-width: 100%; }
+.msg pre.code { background: var(--b0); padding: var(--s2); border-radius: var(--r1); overflow-x: auto; margin: 6px 0; font: 12px var(--mono); white-space: pre; }
+
+/* Folded tool calls: one quiet line, opens to the per-tool detail */
+.act { margin: 8px 0; border-radius: var(--r2); }
+.act > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: var(--s2); color: var(--f2); padding: 6px var(--s2); border-radius: var(--r2); transition: background var(--t-fast); }
+.act > summary::-webkit-details-marker { display: none; }
+.act > summary:hover { background: var(--b2); }
+.act > summary svg { flex: none; transition: transform var(--t-fast); }
+.act[open] > summary svg { transform: rotate(90deg); }
+.act-mark { color: var(--f3); font-size: var(--fs-xs); }
+.act-mark.err { color: var(--rd); background: var(--rd-soft); border-radius: var(--r-pill); padding: 0 var(--s2); }
+.act.err > summary .act-text { color: var(--f1); }
+.act-lines { margin: 2px 0 6px 18px; padding-left: var(--s3); border-left: 1px solid var(--ln2); }
+.tool { border: 1px solid var(--ln); border-radius: var(--r1); margin: 6px 0; background: var(--b2); }
+.tool summary { cursor: pointer; padding: 5px 10px; font: 12px var(--mono); display: flex; gap: var(--s2); }
+.tool summary .tn { color: var(--f1); font-weight: var(--fw-medium); }
+.tool summary .ts { color: var(--f2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+.tool.err summary .tn { color: var(--rd); }
+.tool .tbody { padding: 6px 10px 10px; border-top: 1px solid var(--ln); }
+.tool pre { margin: 4px 0; font: 11.5px var(--mono); white-space: pre-wrap; word-break: break-word; max-height: 360px; overflow: auto; }
+.tool .lbl { font-size: var(--fs-2xs); text-transform: uppercase; color: var(--f3); margin-top: 6px; }
+.tool .lbl.path { text-transform: none; font-family: var(--mono); }
+
+/* Edit / Write: file cards, visible in Normal and Verbose */
+.diffcard { margin: 10px 0; border: 1px solid var(--ln); border-radius: 10px; overflow: hidden; background: var(--b2); }
+.diffcard.err { border-color: color-mix(in srgb, var(--rd) 40%, transparent); }
+.diffcard .dh { display: flex; align-items: center; gap: 10px; padding: var(--s2) var(--s3); border-bottom: 1px solid var(--ln); font: 12.5px var(--mono); }
+.diffcard .dn { color: var(--f3); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: 0.05em; }
+.diffcard .df { color: var(--f1); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.diffcard .dst { margin-left: auto; display: flex; gap: var(--s2); flex: none; }
+.diffcard .dst .p { color: var(--gr); } .diffcard .dst .m { color: var(--rd); }
+.diffcard .derr { margin: 0; padding: var(--s2) var(--s3); font: 11.5px var(--mono); color: var(--rd-ink); background: var(--rd-soft); white-space: pre-wrap; max-height: 160px; overflow: auto; }
+.diff { font: 12px/1.7 var(--mono); white-space: pre; overflow-x: auto; background: transparent; padding: 6px 0; max-height: 420px; overflow-y: auto; }
+.diff .hunk { color: var(--ac); padding: 2px var(--s3); }
+.diff .add { background: var(--addbg); color: var(--gr-ink); padding: 0 var(--s3); }
+.diff .del { background: var(--delbg); color: var(--rd-ink); padding: 0 var(--s3); }
+.diff .ctx { padding: 0 var(--s3); color: var(--f3); }
+.history[data-mode="summary"] .act, .history[data-mode="summary"] .diffcard { display: none; }
+
+/* result: / needs input: / failed: callout */
+.rep { margin: 16px 0; padding: 14px 16px; border-radius: var(--r3); border: 1px solid; display: grid; gap: 4px; }
+.rep-ok { background: var(--gr-soft); border-color: color-mix(in srgb, var(--gr) 30%, transparent); }
+.rep-ask { background: var(--am-soft); border-color: color-mix(in srgb, var(--am) 35%, transparent); }
+.rep-fail { background: var(--rd-soft); border-color: color-mix(in srgb, var(--rd) 35%, transparent); }
+.rep .rk { font-size: var(--fs-xs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+.rep-ok .rk { color: var(--gr); } .rep-ask .rk { color: var(--am); } .rep-fail .rk { color: var(--rd); }
+.rep .rb .md { white-space: pre-line; }
+.rep .rb .md p { margin: 0 0 4px; }
+
+.msg.note { color: var(--f2); font-size: var(--fs-sm); white-space: pre-wrap; word-break: break-word; max-height: 220px; overflow: auto; padding-left: var(--s3); border-left: 2px solid var(--ln2); }
+.thinking { color: var(--f3); font-style: italic; font-size: var(--fs-sm); }
+.jump-bar { position: absolute; right: 24px; bottom: 16px; z-index: 3; display: flex; gap: var(--s2); }
+.jump-bar button { box-shadow: var(--shadow-sm); border-radius: var(--r-pill); padding: 5px var(--s3); }
+
+/* Answers: code blocks (language label + Copy), coloured diff blocks, status words inside lists */
+.md .codeblock { position: relative; margin: 0.6em 0; border: 1px solid var(--ln); border-radius: var(--r2); overflow: hidden; background: var(--b0); }
+.md .codeblock pre { border-radius: 0; padding-top: 24px; }
+.md .codeblock.nolang pre, .md .codeblock.nolang pre.cb-diff { padding-top: var(--s2); }
+.cb-lang { position: absolute; top: 4px; left: 10px; font-size: var(--fs-2xs); text-transform: uppercase; letter-spacing: 0.05em; color: var(--f3); }
+.cb-copy { position: absolute; top: 2px; right: 4px; padding: 0 7px; font-size: var(--fs-xs); opacity: 0; transition: opacity var(--t-fast); }
+.codeblock:hover .cb-copy, .cb-copy:focus { opacity: 1; }
+.md pre.cb-diff { font: 12px var(--mono); white-space: pre; padding: 24px 0 6px; }
+.cb-diff span { display: block; padding: 0 10px; }
+.cb-diff .add { background: var(--addbg); color: var(--gr-ink); }
+.cb-diff .del { background: var(--delbg); color: var(--rd-ink); }
+.cb-diff .hunk { color: var(--ac); }
+.cb-diff .ctx { color: var(--f2); }
+.md .st { font-weight: 700; }
+.md .st-ok { color: var(--gr); }
+.md .st-ask { color: var(--am); }
+.md .st-fail { color: var(--rd); }
+.md .st-warn { color: var(--am); }

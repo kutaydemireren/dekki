@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "preferences": {
+    "replyStyle": { "short": "Reply short, answer first.", "detailed": "Reply in detail." },
+    "autonomy": { "outward": "Ask before outward-facing or irreversible actions.", "ask-all": "Ask before any change.", "rare": "Rarely ask." },
+    "prs": { "me": "I open pull requests.", "workers-draft": "Workers open draft pull requests." },
+    "language": { "same": "Reply in the language I write in.", "custom": "Reply in {{language}}." }
+  },
+  "guardrails": { "neverTouch": "Never touch: {{text}}", "secretsDir": "Secrets live in {{path}}: use them, never read them." },
+  "docs": "Project docs live in {{docsDir}}."
+}

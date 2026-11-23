@@ -1,0 +1,80 @@
+/* Changes tab: read-only code-review view. Cards follow History's edit cards (.diffcard): same surface, border, radius,
+   header font and add/del tokens (--addbg/--delbg, --gr-ink/--rd-ink), so dark and light both work. Safari-safe CSS only. */
+.seg button .seg-n { margin-left: 6px; font: 11px var(--mono); font-weight: var(--fw-medium); }
+.seg-n .p, .ch-n .p { color: var(--gr); }
+.seg-n .m, .ch-n .m { color: var(--rd); }
+
+.changes { position: absolute; inset: 0; display: flex; flex-direction: column; background: var(--b1); }
+.ch-sum { flex: none; display: flex; align-items: center; gap: var(--s3); flex-wrap: wrap; min-height: 40px; box-sizing: border-box; padding: 6px var(--s5); background: var(--b1); border-bottom: 1px solid var(--ln); font-size: var(--fs-sm); color: var(--f2); }
+.ch-branch { border-radius: var(--r1); background: var(--b2); border-color: var(--ln); height: 22px; max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ch-vs b { color: var(--f1); font-weight: var(--fw-medium); }
+.ch-count b { color: var(--f1); font-weight: var(--fw-bold); }
+.ch-n { display: inline-flex; gap: var(--s2); font: 12px var(--mono); flex: none; }
+.ch-warn { color: var(--am); font-size: var(--fs-xs); }
+.ch-sum .seg button { padding: 3px var(--s3); font-size: var(--fs-sm); }
+.ch-fold { font-size: var(--fs-sm); padding: 3px var(--s3); }
+.ch-banner { flex: none; padding: 6px var(--s5); font-size: var(--fs-sm); color: var(--am-ink); background: var(--am-soft); border-bottom: 1px solid var(--ln); }
+
+/* Manager view: one card per worker, its files underneath */
+.ch-groups { flex: 1; min-height: 0; overflow-y: auto; padding: var(--s4) var(--s5); }
+.ch-group { margin: 0 0 var(--s3); border: 1px solid var(--ln); border-radius: 10px; overflow: hidden; background: var(--b2); }
+.ch-ghead { display: flex; align-items: center; gap: var(--s3); width: 100%; box-sizing: border-box; padding: 8px var(--s3); border: 0; background: transparent; color: var(--f2); text-align: left; font-size: var(--fs-sm); }
+.ch-ghead:hover { background: var(--b3); }
+.ch-gname { color: var(--f1); font-size: var(--fs-md); font-weight: var(--fw-medium); }
+.ch-glist { padding: var(--s1) var(--s2) var(--s2); border-top: 1px solid var(--ln); }
+.ch-glist .ch-note { padding: var(--s2); }
+
+.ch-main { flex: 1; min-height: 0; display: flex; }
+.ch-main.stale { opacity: .55; transition: opacity var(--t-fast); }
+.ch-files { flex: none; width: 290px; overflow-y: auto; padding: var(--s2); border-right: 1px solid var(--ln); background: var(--b0); box-sizing: border-box; }
+.ch-fi { display: flex; align-items: center; gap: var(--s2); width: 100%; box-sizing: border-box; padding: 5px var(--s2); border: 0; border-radius: var(--r1); background: transparent; color: var(--f2); text-align: left; font: 12.5px var(--mono); }
+.ch-fi:hover { background: var(--b3); color: var(--f1); }
+.ch-fi.on { background: var(--b3); color: var(--f1); }
+.ch-fi .ch-path { flex: 1; min-width: 0; }
+.ch-diffs { flex: 1; min-width: 0; overflow-y: auto; padding: var(--s3) var(--s5) 60px; }
+
+.ch-path { min-width: 0; display: flex; white-space: pre; font: 12.5px var(--mono); }
+.ch-dir, .ch-from { color: var(--f3); overflow: hidden; text-overflow: ellipsis; flex: 0 1000 auto; min-width: 0; } /* the directory gives way first, the file name stays readable */
+.ch-path b { color: var(--f1); font-weight: var(--fw-bold); overflow: hidden; text-overflow: ellipsis; flex: 0 1 auto; min-width: 0; }
+.ch-st { flex: none; width: 16px; height: 16px; display: inline-flex; align-items: center; justify-content: center; border-radius: 4px; font: 600 10px var(--mono); }
+.ch-st.st-A { color: var(--gr); background: var(--gr-soft); }
+.ch-st.st-M { color: var(--am); background: var(--am-soft); }
+.ch-st.st-D { color: var(--rd); background: var(--rd-soft); }
+.ch-st.st-R { color: var(--ac); background: var(--ac-soft); }
+.ch-tag { flex: none; padding: 0 6px; border-radius: var(--r-pill); border: 1px solid var(--ln2); color: var(--f3); font-size: var(--fs-2xs); text-transform: uppercase; letter-spacing: .05em; }
+
+.ch-card { margin: 0 0 var(--s3); border: 1px solid var(--ln); border-radius: 10px; overflow: hidden; background: var(--b2); }
+.ch-head { display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box; padding: var(--s2) var(--s3); border: 0; border-radius: 0; background: transparent; color: var(--f1); text-align: left; cursor: pointer; }
+.ch-head:hover { background: var(--b3); }
+.ch-head .ch-path { flex: 1; }
+.ch-chev { flex: none; width: 6px; height: 6px; border-right: 1.5px solid var(--f3); border-bottom: 1.5px solid var(--f3); transform: rotate(-45deg); transition: transform var(--t-fast); margin: 0 2px; }
+.ch-chev.open { transform: rotate(45deg); }
+.ch-body { border-top: 1px solid var(--ln); }
+.ch-code { overflow-x: auto; padding: 4px 0; font: 12px/1.7 var(--mono); user-select: text; -webkit-user-select: text; cursor: text; }
+.ch-hunkblock { min-width: max-content; }
+.ch-hunk { padding: 2px var(--s3) 2px 0; margin-left: 100px; color: var(--ac); white-space: pre; }
+.ch-l { display: flex; white-space: pre; min-width: max-content; }
+.ch-l .ln { flex: none; width: 48px; text-align: right; padding-right: var(--s2); box-sizing: border-box; color: var(--f3); font-size: 11px; user-select: none; -webkit-user-select: none; }
+.ch-l .ln::before { content: attr(data-n); }
+.ch-l .tx { flex: 1; padding: 0 var(--s3) 0 var(--s2); min-width: 0; }
+.ch-l.add { background: var(--addbg); color: var(--gr-ink); }
+.ch-l.del { background: var(--delbg); color: var(--rd-ink); }
+.ch-l.ctx { color: var(--f2); }
+.ch-l.meta { color: var(--f3); font-style: italic; }
+.ch-l.add .ln, .ch-l.del .ln { color: inherit; opacity: .6; }
+.ch-note { padding: var(--s3); color: var(--f2); font-size: var(--fs-sm); }
+.ch-note.dim { color: var(--f3); }
+.ch-trunc { padding: var(--s2) var(--s3); border-top: 1px dashed var(--ln2); color: var(--am-ink); background: var(--am-soft); font: 12px var(--mono); }
+
+.ch-empty { margin: 80px auto 0; text-align: center; max-width: 420px; padding: 0 var(--s5); }
+.changes > .ch-empty { margin-top: 80px; }
+.ch-empty-t { color: var(--f1); font-size: var(--fs-lg); font-weight: var(--fw-medium); }
+.ch-empty-s { margin-top: 6px; color: var(--f2); font-size: var(--fs-md); }
+
+@media (max-width: 820px) {
+  .ch-main { flex-direction: column; }
+  .ch-files { width: auto; max-height: 150px; border-right: 0; border-bottom: 1px solid var(--ln); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ch-chev, .ch-main.stale { transition: none; }
+}

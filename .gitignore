@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+.env
+mac/build/
+/.claude/
+CLAUDE.local.md
+.env.*
+coverage/
+mac/icon/contact.png
+mac/icon/preview.png

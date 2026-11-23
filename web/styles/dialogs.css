@@ -1,0 +1,92 @@
+.ctx-menu { position: fixed; z-index: 20; min-width: 160px; background: var(--b3); border: 1px solid var(--ln2); border-radius: var(--r2); padding: 4px; box-shadow: var(--shadow); }
+.ctx-item { padding: 5px 10px; border-radius: 4px; cursor: pointer; }
+.ctx-item:hover { background: var(--ac); color: var(--on-ac); }
+.ctx-item.danger { color: var(--rd); }
+.ctx-item.danger:hover { background: var(--rd-soft); color: var(--rd); }
+.ctx-item.disabled { opacity: 0.4; pointer-events: none; }
+.dialog .ok { background: var(--gr-soft); color: var(--gr-ink); padding: 8px; border-radius: var(--r1); white-space: pre-wrap; font-size: var(--fs-sm); }
+
+.dialog-back { position: fixed; inset: 0; background: var(--scrim); display: flex; align-items: center; justify-content: center; z-index: 10; }
+.dialog { background: var(--b2); border: 1px solid var(--ln2); border-radius: var(--r3); box-shadow: var(--shadow); padding: 20px; width: 480px; max-width: 92vw; display: flex; flex-direction: column; gap: 10px; }
+.dialog.top { align-self: flex-start; margin-top: 14vh; } /* dialogs whose height changes: the first field stays put */
+.dialog h3 { margin: 0; }
+.dialog label { display: flex; flex-direction: column; gap: 3px; color: var(--f2); font-size: var(--fs-sm); }
+.dialog label.inline { flex-direction: row; align-items: center; gap: 6px; }
+.dialog label.inline input { width: auto; }
+.dialog label.radio { align-items: flex-start; color: var(--f1); gap: 8px; }
+.dialog label.radio input { margin-top: 3px; }
+.dialog label.radio b { display: block; }
+.dialog .hint, .dialog label.radio .hint { display: block; color: var(--f2); font-size: var(--fs-sm); font-weight: 400; }
+.dialog .indent { margin-left: 24px; }
+.dialog .workers-box { display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--ln2); border-radius: 3px; padding: 8px; }
+.dialog .workers-box label.inline { color: var(--f1); }
+.dialog .worker-row { flex-wrap: wrap; padding-left: 20px; }
+.dialog .worker-row.disabled { opacity: 0.6; }
+.dialog .worker-state { color: var(--f2); }
+.dialog .worker-reason { flex-basis: 100%; margin-left: 22px; color: var(--am); font-size: var(--fs-xs); }
+.dialog .worker-note { color: var(--f2); font-size: var(--fs-xs); }
+.dialog .worker-results { display: flex; flex-direction: column; gap: 4px; }
+.dialog .worker-results .ok, .dialog .worker-results .err { padding: 4px 8px; }
+.dialog .actions { display: flex; justify-content: flex-end; gap: 8px; }
+.dialog .err { background: var(--rd-soft); color: var(--rd-ink); padding: 8px; border-radius: var(--r1); white-space: pre-wrap; font-size: var(--fs-sm); }
+.dialog .err b { display: block; margin-bottom: 4px; }
+.dialog .err code { background: var(--ln); padding: 0 4px; }
+
+.err .trust-cmd { display: block; margin: 6px 0; padding: 6px 8px; user-select: all; white-space: pre-wrap; word-break: break-all; font-family: var(--mono); }
+
+
+/* Setup wizard (web/SetupWizard.jsx): four screens, progress, folder fields, preference rows, review list, health list. */
+.dialog.wizard { width: 600px; max-height: calc(100vh - 14vh - 24px); overflow-y: auto; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wiz-steps { display: flex; gap: var(--s2); list-style: none; margin: 0; padding: 0; }
+.wiz-step { flex: 1; display: flex; align-items: center; gap: var(--s2); min-width: 0; color: var(--f3); font-size: var(--fs-sm); padding-bottom: var(--s2); border-bottom: 2px solid var(--ln); }
+.wiz-step .n { flex: none; width: 18px; height: 18px; border-radius: var(--r-pill); border: 1px solid var(--ln2); display: inline-flex; align-items: center; justify-content: center; font-size: var(--fs-xs); }
+.wiz-step .t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wiz-step.now { color: var(--f1); border-bottom-color: var(--ac); }
+.wiz-step.now .n { background: var(--ac); border-color: var(--ac); color: var(--on-ac); font-weight: var(--fw-bold); }
+.wiz-step.done { color: var(--f2); border-bottom-color: var(--gr); }
+.wiz-step.done .n { background: var(--gr-soft); border-color: transparent; color: var(--gr-ink); }
+.wiz-path { display: flex; gap: var(--s2); }
+.wiz-path button { flex: none; }
+.wiz-repos { display: flex; flex-direction: column; gap: var(--s1); }
+.wiz-good { color: var(--gr-ink); background: var(--gr-soft); padding: 6px 8px; border-radius: var(--r1); font-size: var(--fs-sm); }
+.wiz-bad { color: var(--rd-ink); background: var(--rd-soft); padding: 6px 8px; border-radius: var(--r1); font-size: var(--fs-sm); }
+.wiz-row { border: 1px solid var(--ln2); border-radius: var(--r2); padding: var(--s2) var(--s3) var(--s3); margin: 0; display: flex; flex-direction: column; gap: var(--s2); min-width: 0; }
+.wiz-row legend { padding: 0 var(--s1); color: var(--f2); font-size: var(--fs-sm); }
+.wiz-row label.radio { flex-direction: row; gap: var(--s2); }
+.wiz-row label.radio b { font-weight: var(--fw-medium); }
+.wiz-sub { color: var(--f2); font-size: var(--fs-sm); }
+.wiz-chips { align-items: center; }
+.wiz-chip { height: 24px; padding-right: 2px; }
+.wiz-x { padding: 0 6px; line-height: 1; height: 20px; border-radius: var(--r-pill); }
+.dialog .wiz-chip-in { width: 120px; flex: none; padding: 2px 8px; }
+.wiz-lang { display: flex; flex-direction: column; gap: var(--s1); flex: 1; min-width: 0; }
+.wiz-reuse { background: var(--ac-soft); border-radius: var(--r2); padding: var(--s2) var(--s3); color: var(--f1); flex-wrap: wrap; }
+.wiz-reuse select { width: auto; }
+.wiz-sum { color: var(--f1); }
+.wiz-list-h { color: var(--f2); font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .04em; margin-top: var(--s1); }
+.wiz-files { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; max-height: 210px; overflow-y: auto; }
+.wiz-file { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s2); font-size: var(--fs-sm); padding: 2px 0; }
+.wiz-file code { font-family: var(--mono); font-size: var(--fs-xs); word-break: break-all; }
+.wiz-fn { color: var(--f3); font-size: var(--fs-xs); }
+.wiz-notice { border: 1px solid var(--am); background: var(--am-soft); color: var(--f1); border-radius: var(--r2); padding: var(--s3); display: flex; flex-direction: column; gap: var(--s2); }
+.wiz-notice label.inline { color: var(--f1); }
+.wiz-copy { position: relative; }
+.wiz-copy pre { margin: 0; max-height: 150px; overflow: auto; background: var(--b0); border: 1px solid var(--ln2); border-radius: var(--r1); padding: var(--s2) var(--s3); padding-right: 64px; font: var(--fs-xs) var(--mono); font-variant-ligatures: none; white-space: pre-wrap; user-select: all; color: var(--f1); }
+.wiz-copy button { position: absolute; top: var(--s2); right: var(--s2); }
+.wiz-trust { display: flex; flex-direction: column; gap: var(--s2); margin-bottom: var(--s3); }
+.wiz-trust .hint { margin: 0; }
+.wiz-trust-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s2); }
+.wiz-trust-name { display: block; color: var(--f2); font-size: var(--fs-xs); margin-bottom: 2px; }
+.wiz-copy-line pre { max-height: none; white-space: pre-wrap; word-break: break-all; }
+.wiz-health { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--s2); }
+.wiz-hi { display: flex; gap: var(--s2); align-items: flex-start; }
+.wiz-mark { flex: none; width: 18px; height: 18px; border-radius: var(--r-pill); display: inline-flex; align-items: center; justify-content: center; font-size: var(--fs-xs); font-weight: var(--fw-bold); background: var(--b3); color: var(--f2); margin-top: 1px; }
+.wiz-mark.gr { background: var(--gr-soft); color: var(--gr-ink); }
+.wiz-mark.rd { background: var(--rd-soft); color: var(--rd-ink); }
+.wiz-hb { display: flex; flex-direction: column; min-width: 0; }
+.wiz-hd { color: var(--f2); font-size: var(--fs-xs); word-break: break-all; }
+.wiz-fix { color: var(--rd-ink); font-size: var(--fs-sm); }
+@media (max-width: 640px) { .wiz-step .t { display: none; } .wiz-step.now .t { display: inline; } }
+.dialog .wiz-row label.radio b { display: inline; }
+.dialog .wiz-row label.radio .hint { display: inline; margin-left: var(--s2); color: var(--f3); }
