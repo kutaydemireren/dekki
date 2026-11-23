@@ -210,8 +210,13 @@ export default function App() {
   const goTo = (id) => { if (id && id !== selectedRef.current) setSelectedId(id); };
   const goNext = () => goTo(nextNeedingId(agents, prefs, selectedId));
   const togglePalette = (toggle) => setPalette((open) => (open ? !toggle : overlayCount() === 0));
+  const toggleTree = () => setShowTree((v) => !v);
+  const toggleSkills = () => { setShowSkills((v) => !v); setShowPrompts(false); };
+  const togglePrompts = () => { setShowPrompts((v) => !v); setShowSkills(false); };
   useShortcuts({
     selectedId,
+    // An open skills or prompts panel is one overlay itself; any other overlay (dialog, palette, menu) blocks the toggle.
+    onPanel: (p) => { if (overlayCount() <= (showSkills || showPrompts ? 1 : 0)) ({ tree: toggleTree, skills: toggleSkills, prompts: togglePrompts })[p](); },
     onSelect: goTo,
     onPalette: togglePalette,
     onNext: goNext,
@@ -324,7 +329,7 @@ export default function App() {
         onBrand={clearSelection}
         onNew={() => setCreating(true)}
         error={error}
-        tools={{ showTree, showSkills, showPrompts, notify, onTree: () => setShowTree((v) => !v), onSkills: () => { setShowSkills((v) => !v); setShowPrompts(false); }, onPrompts: () => { setShowPrompts((v) => !v); setShowSkills(false); }, onNotify: toggleNotify }}
+        tools={{ showTree, showSkills, showPrompts, notify, onTree: toggleTree, onSkills: toggleSkills, onPrompts: togglePrompts, onNotify: toggleNotify }}
       >
         <AgentList
           rootKey={rootKey}

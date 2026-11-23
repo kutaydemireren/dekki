@@ -93,6 +93,9 @@ Letter keys do nothing while a text field, a dialog or the terminal has focus. P
 | `N` | Select the next agent that needs you |
 | `C` | New agent |
 | `Cmd+1` to `Cmd+9` | Select the 1st to 9th pinned agent |
+| `Cmd+B` | Show / hide the folder tree |
+| `Cmd+Shift+S` | Show / hide skill usage |
+| `Cmd+Shift+P` | Show / hide saved prompts |
 | `?` | Show the shortcut sheet |
 | `Esc` | Close the top-most dialog or the palette |
 
