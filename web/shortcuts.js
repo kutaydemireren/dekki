@@ -3,6 +3,7 @@ import { nest, groupAgents, GROUPS } from './groups.js';
 
 export const IS_MAC = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent || '');
 export const MOD = IS_MAC ? '⌘' : 'Ctrl+'; // label of the Cmd/Ctrl key in hints
+export const SHIFT = IS_MAC ? '⇧' : 'Shift+';
 
 const isEditable =(t) => {
   if (!t) return false;
@@ -27,6 +28,15 @@ export function keyMode(e, { isMac = true } = {}) {
   }
   if (other) return null;
   return isEditable(t) ? null : 'plain';
+}
+
+/** Which toolbar panel a Cmd/Ctrl+key toggles: B folder tree, Shift+S skill usage, Shift+P saved prompts; null for any other key. */
+export function panelFor(key, shiftKey) {
+  const k = String(key || '').toLowerCase();
+  if (k === 'b' && !shiftKey) return 'tree';
+  if (k === 's' && shiftKey) return 'skills';
+  if (k === 'p' && shiftKey) return 'prompts';
+  return null;
 }
 
 /** Id `dir` steps (+1 / -1) from `current` in `ids` (no wrap). Nothing selected: first (dir +1) or last (dir -1). */
