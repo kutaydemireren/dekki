@@ -8,7 +8,7 @@ const ROWS = [
   [['J', 'K'], 'Select the next / previous agent in the list'],
   [['N'], 'Select the next agent that needs you'],
   [['C'], 'New agent'],
-  [[`${MOD}1`, `${MOD}9`], 'Select the 1st to 9th pinned agent'],
+  [[`${MOD}1`, `${MOD}9`], 'Select the 1st to 9th agent: those that need you first, then the pinned ones'],
   [[`${MOD}B`], 'Show / hide the folder tree'],
   [[`${MOD}${SHIFT}S`], 'Show / hide skill usage'],
   [[`${MOD}${SHIFT}P`], 'Show / hide saved prompts'],

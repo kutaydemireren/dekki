@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { keyMode, panelFor, stepId, nextNeedingId, pinnedOrder } from '../../web/shortcuts.js';
+import { keyMode, panelFor, stepId, nextNeedingId, shortcutOrder } from '../../web/shortcuts.js';
 
 const el = (tagName, extra = {}) => ({ tagName, ...extra });
 const ev = (key, o = {}) => ({ key, metaKey: false, ctrlKey: false, altKey: false, shiftKey: false, target: el('BODY'), ...o });
@@ -47,10 +47,16 @@ test('nextNeedingId cycles through top-level agents that need you', () => {
   assert.equal(nextNeedingId(agents, {}, 'c'), 'a');
   assert.equal(nextNeedingId([mk('b')], {}, null), null);
 });
-test('pinnedOrder follows the list order, pinned agents only', () => {
-  const agents = [mk('old', { lastActivityAt: 1 }), mk('run', { state: 'working' }), mk('ask', { needsInput: true }), mk('x')];
-  assert.deepEqual(pinnedOrder(agents, { pinned: ['old', 'run', 'ask', 'gone'] }), ['ask', 'run', 'old']);
-  assert.deepEqual(pinnedOrder(agents, {}), []);
+test('shortcutOrder: every Needs-you row first, then the Pinned section, nothing else', () => {
+  const agents = [mk('old', { lastActivityAt: 1 }), mk('run', { state: 'working' }), mk('ask', { needsInput: true }), mk('ask2', { needsInput: true, lastActivityAt: 50 }), mk('x')];
+  // ask is pinned and needs you: it stays in Needs you; the plain Needs-you row follows; then Pinned, newest first
+  assert.deepEqual(shortcutOrder(agents, { pinned: ['old', 'run', 'ask', 'gone'] }), ['ask', 'ask2', 'run', 'old']);
+  assert.deepEqual(shortcutOrder(agents, {}), ['ask', 'ask2']);
+  assert.deepEqual(shortcutOrder(agents, { pinned: ['x'], archived: ['x'] }), ['ask', 'ask2']);
+});
+test('shortcutOrder: at most 9 ids', () => {
+  const agents = Array.from({ length: 12 }, (_, i) => mk(`a${i}`, { lastActivityAt: 100 + i }));
+  assert.equal(shortcutOrder(agents, { pinned: agents.map((x) => x.id) }).length, 9);
 });
 
 test('panelFor maps Cmd+B / Shift+S / Shift+P to the tree, skills and prompts panels only', () => {

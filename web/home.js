@@ -4,7 +4,7 @@ import { groupAgents, nest } from './groups.js';
 // workers of a manager are nested under it and not counted separately, as in the list).
 export function homeSummary(agents, prefs = {}, now = new Date()) {
   const { top } = nest(agents, prefs.archived || []);
-  const g = groupAgents(top, prefs, now);
+  const g = groupAgents(top, { ...prefs, pinned: [] }, now); // a pin only moves a row in the list, not the counts
   return { needs: g['Needs input'], working: g.Running, done: g['Done today'] };
 }
 
