@@ -6,6 +6,7 @@ import '@xterm/xterm/css/xterm.css';
 import { toTerminalInput } from './prompt-text.js';
 import { TERM_FONT, TERM_FONT_SIZE, termThemeFor, remeasureWhenFontLoads } from './term-theme.js';
 import { currentResolved } from './theme.js';
+import { termLinkHandler } from './term-links.js';
 
 // xterm.js <-> WebSocket <-> node-pty running `claude attach <id>`. Closing the socket kills the pty;
 // the agent keeps running.
@@ -26,6 +27,7 @@ export default function SessionTab({ agentId, active }) {
       cursorBlink: true,
       scrollback: 5000,
       allowProposedApi: true, // term.unicode (width table)
+      linkHandler: termLinkHandler,
       theme: termThemeFor(currentResolved()),
     });
     const fit = new FitAddon();
