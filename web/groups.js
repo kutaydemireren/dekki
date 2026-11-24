@@ -1,6 +1,6 @@
 // Pure grouping logic for the agent list.
 // Display order. Labels shown in the UI live in AgentList (Needs input = "Needs you", Running = "Working").
-export const GROUPS = ['Needs input', 'Running', 'Done today', 'Older', 'Other agents', 'Archived'];
+export const GROUPS = ['Needs input', 'Pinned', 'Running', 'Done today', 'Older', 'Other agents', 'Archived'];
 
 export function localMidnight(now = new Date()) {
   const d = new Date(now);
@@ -12,8 +12,9 @@ export function groupOf(agent, { pinned = [], archived = [] } = {}, now = new Da
   if (archived.includes(agent.id)) return 'Archived';
   if (agent.mine === false) return 'Other agents'; // not created by you (e.g. a manager's workers): hidden by default
   if (agent.stalled) return 'Needs input'; // turn ended, workers all finished, nothing will wake it
+  if (agent.state !== 'working' && agent.needsInput) return 'Needs input';
+  if (pinned.includes(agent.id)) return 'Pinned'; // pinned stays visible however old or busy; a pinned agent that needs you stays in Needs input
   if (agent.state === 'working') return 'Running';
-  if (agent.needsInput) return 'Needs input';
   return (agent.lastActivityAt ?? 0) >= localMidnight(now) ? 'Done today' : 'Older';
 }
 

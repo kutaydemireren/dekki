@@ -105,7 +105,7 @@ export default function AgentList({ agents, selectedId, onSelect, onNew, onNext,
   const [, tick] = useState(0);
   const [rootProject, setRootProject] = useState(''); // projects-root folder name: its sessions are labelled 'Manager sessions'
   useEffect(() => { fetch('/api/config').then((r) => r.json()).then((b) => setRootProject(String(b.root || '').split('/').filter(Boolean).pop() || '')).catch(() => {}); }, [rootKey]);
-  const [open, setOpen] = useState({ Older: false, 'Other agents': false, Archived: false });
+  const [open, setOpen] = useState({ Pinned: true, Older: false, 'Other agents': false, Archived: false }); // not persisted: resets on reload
   useEffect(() => {
     const t = setInterval(() => tick((n) => n + 1), 30000); // refresh ages and the midnight boundary
     return () => clearInterval(t);
@@ -182,7 +182,7 @@ export default function AgentList({ agents, selectedId, onSelect, onNew, onNext,
         {noMatches && <div className="search-empty">No matches</div>}
         {sections.map(({ key, g, label, items }) => {
           if ((g === 'Archived' || g === 'Other agents' || searching) && !items.length) return null;
-          const collapsible = g === 'Older' || g === 'Other agents' || g === 'Archived';
+          const collapsible = g === 'Older' || g === 'Other agents' || g === 'Archived' || g === 'Pinned';
           // A collapsed Other agents group must not hide a worker's question or news.
           const alerts = g === 'Other agents' ? items.filter((a) => a.needsInput).length : 0;
           const news = g === 'Other agents' && items.some((a) => unread.has(a.id));

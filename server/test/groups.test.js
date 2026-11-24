@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { groupAgents, groupOf, localMidnight, nest, chipMarker, workingCount } from '../../web/groups.js';
+import { GROUPS, groupAgents, groupOf, localMidnight, nest, chipMarker, workingCount } from '../../web/groups.js';
 
 const now = new Date(2026, 9, 21, 15, 0, 0);
 const mid = localMidnight(now);
@@ -42,9 +42,23 @@ test('nest: linked workers go under their manager, running first then newest; or
   assert.equal(Object.values(g).flat().length, 1);
 });
 
-test('groupAgents: pinned first, then newest first', () => {
-  const g = groupAgents([a('x', { lastActivityAt: mid + 5 }), a('y', { lastActivityAt: mid + 9 }), a('z', { lastActivityAt: mid + 1 })], { pinned: ['z'] }, now);
-  assert.deepEqual(g['Done today'].map((x) => x.id), ['z', 'y', 'x']);
+test('groupAgents: pinned agents form the Pinned group, newest first; the others keep newest first', () => {
+  const g = groupAgents([a('x', { lastActivityAt: mid + 5 }), a('y', { lastActivityAt: mid + 9 }), a('z', { lastActivityAt: mid + 1 }), a('p', { lastActivityAt: 7 })], { pinned: ['z', 'p'] }, now);
+  assert.deepEqual(g.Pinned.map((x) => x.id), ['z', 'p']);
+  assert.deepEqual(g['Done today'].map((x) => x.id), ['y', 'x']);
+  assert.deepEqual(GROUPS, ['Needs input', 'Pinned', 'Running', 'Done today', 'Older', 'Other agents', 'Archived']);
+});
+
+test('groupOf: Pinned precedence (archived, other agents and needs-you win; working, done and old pinned agents land in Pinned)', () => {
+  const pin = { pinned: ['1'] };
+  assert.equal(groupOf(a('1', { state: 'working' }), pin, now), 'Pinned');
+  assert.equal(groupOf(a('1', { lastActivityAt: mid - 1 }), pin, now), 'Pinned');
+  assert.equal(groupOf(a('1'), pin, now), 'Pinned');
+  assert.equal(groupOf(a('1', { state: 'blocked', needsInput: true }), pin, now), 'Needs input');
+  assert.equal(groupOf(a('1', { state: 'working', stalled: true }), pin, now), 'Needs input');
+  assert.equal(groupOf(a('1', { mine: false }), pin, now), 'Other agents');
+  assert.equal(groupOf(a('1'), { pinned: ['1'], archived: ['1'] }, now), 'Archived');
+  assert.equal(groupOf(a('1', { needsInput: false }), pin, now), 'Pinned'); // answered: back to Pinned
 });
 
 test('groupOf: a stalled manager goes to Needs input, not Running', () => {

@@ -1,7 +1,7 @@
 // REST routes. Called only after the shared Host/Origin check. Reads are GET; mutations POST/DELETE only.
 import { listAgents } from './agents.js';
 import { isAgentId } from './claude.js';
-import { readState, setMember, setName } from './state.js';
+import { readState, setMember, setName, setArchived, setPinned } from './state.js';
 import { publicAccounts, setActiveAccount, activeRoot } from './accounts.js';
 import { rootConfig, setRoot, pickFolder, setupActiveRoot } from './root.js';
 import { setupStatus, previewSetup, applySetup, runHealth } from './setup.js';
@@ -293,7 +293,7 @@ export function apiRoutes() {
         json(res, 200, prefsOf(setMember('owned', m[1], on)));
         return true;
       }
-      const s = setMember(m[2] === 'pin' ? 'pinned' : 'archived', m[1], on);
+      const s = m[2] === 'pin' ? setPinned(m[1], on) : setArchived(m[1], on); // archive drops the pin; pin un-archives
       json(res, 200, prefsOf(s));
       return true;
     }

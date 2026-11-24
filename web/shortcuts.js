@@ -1,5 +1,5 @@
 // Pure logic of the keyboard layer (web/useShortcuts.js): may a key event act, and which agent a key moves to.
-import { nest, groupAgents, GROUPS } from './groups.js';
+import { nest, groupAgents } from './groups.js';
 
 export const IS_MAC = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent || '');
 export const MOD = IS_MAC ? '⌘' : 'Ctrl+'; // label of the Cmd/Ctrl key in hints
@@ -55,9 +55,9 @@ export function nextNeedingId(agents, prefs, selectedId) {
   return needs[(i + 1) % needs.length].id;
 }
 
-/** Pinned top-level agents in the order the list shows them (group order, then newest), for Cmd+1..9. */
-export function pinnedOrder(agents, prefs) {
-  const pinned = prefs.pinned || [];
+/** Agent ids for Cmd+1..9, in the order the list shows them: every top-level row in "Needs you" (pinned or not),
+ *  then the rows of the Pinned section. At most 9. */
+export function shortcutOrder(agents, prefs) {
   const groups = groupAgents(nest(agents, prefs.archived).top, prefs);
-  return GROUPS.flatMap((g) => groups[g]).filter((a) => pinned.includes(a.id)).map((a) => a.id);
+  return [...groups['Needs input'], ...groups.Pinned].map((a) => a.id).slice(0, 9);
 }
