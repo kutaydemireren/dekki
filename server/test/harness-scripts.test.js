@@ -107,7 +107,7 @@ if [ "$1" = agents ]; then echo "\${STUB_AGENTS:-[]}"; exit 0; fi
 if [ -n "$STUB_FAIL" ]; then echo "$STUB_FAIL"; exit 1; fi
 printf '%s\\0' "$@" > "$STUB_ARGS"
 echo "PWD=$PWD" > "$STUB_ARGS.pwd"
-echo "claude attach 0123abcd"
+echo "claude attach \${STUB_NEW_ID:-0123abcd}"
 `, { mode: 0o755 });
 
 let counter = 0;
@@ -221,16 +221,45 @@ test('delegate.sh: an old root without harness.json behaves as before (defaults,
   assert.match(k.stdout, /check passed/);
 });
 
-test('delegate.sh --resume renders the settings and passes them; never appends the brief text', () => {
+function resumeRoot() {
   const c = makeRoot(fullConfig);
   fs.mkdirSync(path.join(c.env.CLAUDE_CONFIG_DIR, 'projects', 'p'), { recursive: true });
   fs.writeFileSync(path.join(c.env.CLAUDE_CONFIG_DIR, 'projects', 'p', '0123abcd-full-session.jsonl'), '');
+  c.env.CLAUDE_JOB_DIR = path.join(c.base, 'jobs', 'deadbeef');
+  return c;
+}
+const linksOf = (c) => { try { return fs.readFileSync(path.join(c.env.HOME, '.dekki', 'links.tsv'), 'utf8'); } catch { return ''; } };
+
+test('delegate.sh --resume without flags continues the same session: no --effort, --settings or --permission-mode, no copy note, no link', () => {
+  const c = resumeRoot();
   const r = run(c, 'delegate.sh', ['--resume', '0123abcd', 'proj', 'follow up']);
+  assert.equal(r.status, 0, r.stderr);
+  assert.deepEqual(claudeArgs(c), ['--bg', '--resume', '0123abcd-full-session', 'follow up']);
+  assert.doesNotMatch(r.stderr, /COPY/);
+  assert.equal(linksOf(c), '', 'the same id is already linked');
+  assert.match(fs.readFileSync(path.join(c.root, '.claude', 'delegations.log'), 'utf8'), /\tresume\t0123abcd\tfollow up/);
+});
+
+test('delegate.sh --resume --effort starts a copy: auto mode, deny rules and effort passed, a note, and the new id linked', () => {
+  const c = resumeRoot();
+  const r = run(c, 'delegate.sh', ['--resume', '0123abcd', 'proj', 'follow up', '--effort', 'high'], { env: { STUB_NEW_ID: 'feedbeef' } });
   assert.equal(r.status, 0, r.stderr);
   const args = claudeArgs(c);
   assert.ok(args.includes('--resume') && args[args.indexOf('--resume') + 1] === '0123abcd-full-session');
   assert.equal(args[args.length - 1], 'follow up');
+  assert.equal(args[args.indexOf('--effort') + 1], 'high');
+  assert.equal(args[args.indexOf('--permission-mode') + 1], 'auto');
   assert.equal(args[args.indexOf('--settings') + 1], path.join(c.root, '.claude', 'worker-settings.json'));
+  assert.match(r.stderr, /note: --effort starts a COPY of 0123abcd/);
+  assert.match(linksOf(c), /^feedbeef\tdeadbeef\t/);
+  assert.doesNotMatch(linksOf(c), /0123abcd/);
+});
+
+test('delegate.sh --resume rejects an unknown effort level only when --effort is given', () => {
+  const c = resumeRoot();
+  const r = run(c, 'delegate.sh', ['--resume', '0123abcd', 'proj', 'x', '--effort', 'ultra']);
+  assert.equal(r.status, 2);
+  assert.equal(claudeCalled(c), false);
 });
 
 test('delegate.sh refuses a broken config and unsafe project names, and does not start claude', () => {
