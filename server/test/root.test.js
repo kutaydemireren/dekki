@@ -176,7 +176,7 @@ printf '%s\\n' "$@" > "$FAKE_ARGS"
 echo "claude attach 0123abcd"
 `, { mode: 0o755 });
 
-test('delegate.sh renders per-root worker settings (hook path = this root) for new and --resume workers', () => {
+test('delegate.sh renders per-root worker settings (hook path = this root) for new workers and --resume copies', () => {
   const dir = scaffoldedRoot();
   const env = { ...process.env, PATH: `${stubDir}:${process.env.PATH}`, FAKE_ARGS: path.join(tmp, 'args.txt'), CLAUDE_CONFIG_DIR: persCfg, CLAUDE_JOB_DIR: '' };
   const tplText = fs.readFileSync(path.join(dir, '.claude/scripts/worker-deny.json'), 'utf8');
@@ -199,7 +199,7 @@ test('delegate.sh renders per-root worker settings (hook path = this root) for n
   fs.mkdirSync(path.join(persCfg, 'projects', 'p'), { recursive: true });
   fs.writeFileSync(path.join(persCfg, 'projects', 'p', '0123abcd-full.jsonl'), '');
   fs.rmSync(rendered);
-  execFileSync(path.join(dir, '.claude/scripts/delegate.sh'), ['--resume', '0123abcd', 'proj', 'again'], { env, cwd: dir, stdio: 'pipe' });
+  execFileSync(path.join(dir, '.claude/scripts/delegate.sh'), ['--resume', '0123abcd', 'proj', 'again', '--effort', 'high'], { env, cwd: dir, stdio: 'pipe' });
   args = fs.readFileSync(env.FAKE_ARGS, 'utf8').split('\n');
   assert.equal(args[args.indexOf('--settings') + 1], rendered);
   assert.ok(fs.existsSync(rendered));
