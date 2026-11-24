@@ -181,7 +181,7 @@ export function briefText(config, project) {
   if (config.docsDir) {
     const d = `${config.docsDir.replace(/\/+$/, '')}/${project}`;
     lines.push('', 'Docs',
-      `- This project's docs live in ${d}/ (outside the repo). Before you change anything, read START-HERE.md and the newest LOG.md entry there, then only the SPEC and DECISIONS sections your change touches. Update the docs in the same session as the change (SPEC for what it does now, DECISIONS for a choice made or reversed, LOG entry at the end, INBOX for bugs and ideas you were told to note), following ${config.docsDir.replace(/\/+$/, '')}/README.md. Name the docs you touched in your report. If you cannot read or write that folder, say so in your report; do not skip it silently.`);
+      `- This project's docs live in ${d}/ (outside the repo). Before you change anything, read START-HERE.md and the newest LOG.md entry there, then only the SPEC and DECISIONS sections your change touches. Update the docs in the same session as the change (SPEC for what it does now, DECISIONS for a choice made or reversed, LOG entry at the end, INBOX for bugs and ideas you were told to note), following ${config.docsDir.replace(/\/+$/, '')}/README.md. In your report, name which docs you read (START-HERE and the date of the newest LOG entry) and which you touched. If you cannot read or write that folder, say so in your report; do not skip it silently.`);
   }
   const p = isObj(config.projects) && isObj(config.projects[project]) ? config.projects[project] : null;
   const c = p && isObj(p.checks) ? p.checks : {};
