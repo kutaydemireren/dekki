@@ -95,7 +95,7 @@ test('docs templates: the five docs plus the index, placeholders only {{project}
     assert.ok(text.length < 4000 || f === 'README.md', `${f} stays a short starter`);
   }
   const readme = fs.readFileSync(path.join(dir, 'README.md'), 'utf8');
-  for (const needle of ['20 KB', '25 KB', 'two weeks', 'archive/DECISIONS-archive.md', 'Status', 'same session', 'A fact lives in one place']) assert.ok(readme.includes(needle), needle);
+  for (const needle of ['20 KB', '25 KB', 'newest 5 entries', 'archive/DECISIONS-archive.md', 'Status', 'same session', 'A fact lives in one place']) assert.ok(readme.includes(needle), needle);
 });
 
 // ---- scripts in a temp root ----------------------------------------------------------------------------------

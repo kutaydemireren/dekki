@@ -27,7 +27,7 @@ One subfolder per project. Each holds five short docs: the project's memory, for
 
 ## LOG maintenance
 - Newest entry last. Each entry: what you did, what is next, what the next agent should know, the docs you touched.
-- When the file passes about 25 KB, compress entries older than two weeks into a short digest that keeps the facts the next agent needs. First check each fact is already in SPEC or DECISIONS. Keep the old text in `archive/`.
+- When the file passes about 25 KB, compress everything except the newest 5 entries and anything about unmerged work or open follow-ups, whatever its age, into a short digest that keeps the facts the next agent needs. First check each fact is already in SPEC or DECISIONS. Keep the old text in `archive/`.
 
 ## INBOX
 Each entry is a block (the format is at the top of the project's `INBOX.md`) with a Status: `open`, `picked up (branch)`, then `done (date, branch or commit)`. When someone asks you to log or note a bug or idea, append an entry under "Open" and do nothing else unless asked. When someone asks you to fix or improve the project with no specific target, read the INBOX first. A done entry moves to "Done".
