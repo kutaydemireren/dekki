@@ -24,10 +24,12 @@ export function readState() {
   const d = DEFAULTS();
   try {
     const s = JSON.parse(fs.readFileSync(statePath(), 'utf8'));
+    const archived = Array.isArray(s.archived) ? s.archived.filter((x) => typeof x === 'string') : [];
     return {
       root: typeof s.root === 'string' && s.root ? s.root : d.root,
-      pinned: Array.isArray(s.pinned) ? s.pinned.filter((x) => typeof x === 'string') : [],
-      archived: Array.isArray(s.archived) ? s.archived.filter((x) => typeof x === 'string') : [],
+      // archived means never pinned: older state files may hold both, so drop the pin (idempotent)
+      pinned: Array.isArray(s.pinned) ? s.pinned.filter((x) => typeof x === 'string' && !archived.includes(x)) : [],
+      archived,
       owned: Array.isArray(s.owned) ? s.owned.filter((x) => typeof x === 'string') : [],
       others: Array.isArray(s.others) ? s.others.filter((x) => typeof x === 'string') : [],
       names: cleanNames(s.names),
@@ -55,6 +57,26 @@ export function setMember(key, id, on) {
   const set = new Set(s[key]);
   if (on) set.add(id); else set.delete(id);
   s[key] = [...set];
+  writeState(s);
+  return s;
+}
+
+/** Archive or un-archive an agent in one write. Archiving drops its pin; un-archiving does not bring it back. Returns the new state. */
+export function setArchived(id, on) {
+  const s = readState();
+  const arch = new Set(s.archived);
+  if (on) { arch.add(id); s.pinned = s.pinned.filter((x) => x !== id); } else arch.delete(id);
+  s.archived = [...arch];
+  writeState(s);
+  return s;
+}
+
+/** Pin or unpin an agent in one write. Pinning an archived agent un-archives it. Returns the new state. */
+export function setPinned(id, on) {
+  const s = readState();
+  const pin = new Set(s.pinned);
+  if (on) { pin.add(id); s.archived = s.archived.filter((x) => x !== id); } else pin.delete(id);
+  s.pinned = [...pin];
   writeState(s);
   return s;
 }

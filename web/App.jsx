@@ -28,7 +28,7 @@ import ShortcutSheet from './ShortcutSheet.jsx';
 import ToastHost from './Toast.jsx';
 import useToast from './useToast.js';
 import useShortcuts from './useShortcuts.js';
-import { nextNeedingId, pinnedOrder } from './shortcuts.js';
+import { nextNeedingId, shortcutOrder } from './shortcuts.js';
 import { overlayCount } from './overlay-stack.js';
 import SetupWizard from './SetupWizard.jsx';
 
@@ -222,7 +222,7 @@ export default function App() {
     onNext: goNext,
     onNew: () => setCreating(true),
     onHelp: () => setHelp(true),
-    onPinned: (n) => goTo(pinnedOrder(agents, prefs)[n - 1]),
+    onNumber: (n) => goTo(shortcutOrder(agents, prefs)[n - 1]),
   });
   const paletteActions = [
     { id: 'new', label: 'New agent', keys: 'C', run: () => setCreating(true) },
