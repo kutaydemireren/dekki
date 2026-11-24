@@ -41,7 +41,7 @@ Dekki never reads your docs folder for another account; each account gets its ow
 - **Change the tone or autonomy**: re-run the wizard (reply style, how often to ask, who opens pull requests, language), or edit the playbook text outside the marked blocks.
 - **Change what counts as sensitive or visible**: edit the project's entry through `project-setup.sh <project> --sensitive '<regex>' --ui '<regex>'`. The regexes match changed file paths. The manager asks you once the first time it works on a project and saves the answer.
 - **Change the tier thresholds**: they are variables at the top of `classify-change.sh`. Check a change to them against a few past commits (`classify-change.sh <repo> <rev>`) before trusting it.
-- **Change the docs rules**: the docs folder's `README.md` holds them (size caps, how to archive decisions, how to compress the log). Edit it; workers are told to follow it.
+- **Change the docs rules**: the docs folder's `README.md` holds them (size caps, how to archive decisions, how to compress the log). Edit it; workers are told to follow it. `delegate.sh` warns the manager when LOG, DECISIONS or START-HERE is over its cap.
 - **Add your own skills**: put them in the Claude config directory of the account that should have them, or in a project's own `.claude/skills`.
 
 ## If you already have your own setup
