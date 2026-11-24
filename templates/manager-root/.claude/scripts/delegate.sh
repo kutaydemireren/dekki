@@ -15,6 +15,8 @@
 set -euo pipefail
 
 EFFORT=medium
+# Doc size caps in bytes, matching the docs README (about 25 KB, 20 KB, 4 KB). Over a cap only warns the manager.
+LOG_CAP=25600; DECISIONS_CAP=20480; START_HERE_CAP=4096
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 LOG="$ROOT/.claude/delegations.log"
 HARNESS="$ROOT/.claude/scripts/harness.mjs"
@@ -185,6 +187,18 @@ docs="$(node "$HARNESS" docs-dir "$ROOT")" || exit 1
 if [[ -n "$docs" ]] && ! grep -qiE 'docs read: *yes' <<<"$brief"; then
   # held back: a trust failure prints only the trust line (the manager re-runs the same call after the user trusts the folder)
   DOCS_WARN="warning: the brief does not say \"docs read: yes\". Read $docs/$project/START-HERE.md and the newest LOG.md entry first, then add that line to the brief."
+fi
+
+# Warn the manager (never the worker brief: parallel workers would all compress the same file) when a doc is over its cap.
+if [[ -n "$docs" ]]; then
+  for pair in "LOG.md:$LOG_CAP" "DECISIONS.md:$DECISIONS_CAP" "START-HERE.md:$START_HERE_CAP"; do
+    f="$docs/$project/${pair%%:*}"; cap="${pair##*:}"
+    [[ -f "$f" ]] || continue
+    size="$(wc -c < "$f" | tr -d ' ')"
+    if [[ "$size" =~ ^[0-9]+$ ]] && (( size > cap )); then
+      echo "warning: $f is $((size / 1024)) KB, over its cap of about $((cap / 1024)) KB. Ask a worker to do the housekeeping pass described in $docs/README.md." >&2
+    fi
+  done
 fi
 
 cd "$dir"

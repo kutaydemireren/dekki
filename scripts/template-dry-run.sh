@@ -124,6 +124,19 @@ unset STUB_FAIL
 grep -q 'does not say "docs read: yes"' "$T/err.txt" && ok "warned: brief without docs read: yes" || fail "no docs-read warning"
 "$R/.claude/scripts/delegate.sh" "$P" "with docs read: yes" 2>"$T/err.txt" >/dev/null
 grep -q 'docs read' "$T/err.txt" && fail "warned although the brief says docs read: yes" || ok "no warning with docs read: yes"
+echo "--- docs size warning (manager stderr only; never blocks, never in the brief)"
+D="$T/docs/$P"
+head -c 30000 /dev/zero | tr '\0' 'x' > "$D/LOG.md"; head -c 25000 /dev/zero | tr '\0' 'x' > "$D/DECISIONS.md"; rm -f "$D/START-HERE.md"
+set +e; "$R/.claude/scripts/delegate.sh" "$P" "size check docs read: yes" 2>"$T/err.txt" >/dev/null; rc=$?; set -e
+(( rc == 0 )) && ok "over-cap docs do not block" || fail "over-cap docs blocked delegation"
+grep -q "LOG.md is 29 KB, over its cap of about 25 KB.*housekeeping pass" "$T/err.txt" && ok "LOG over cap warns" || fail "no LOG warning: $(cat "$T/err.txt")"
+grep -q "DECISIONS.md is 24 KB, over its cap of about 20 KB" "$T/err.txt" && ok "DECISIONS over cap warns" || fail "no DECISIONS warning"
+grep -q "START-HERE.md" "$T/err.txt" && fail "warned about a missing START-HERE.md" || ok "missing file stays silent"
+[[ "$(brief)" == *"housekeeping pass"* ]] && fail "warning leaked into the brief" || ok "warning is not in the brief"
+[[ "$(brief)" == *"which docs you read"* ]] && ok "brief asks the report to name docs read" || fail "brief lacks the docs-read requirement"
+head -c 1000 /dev/zero | tr '\0' 'x' > "$D/LOG.md"; head -c 1000 /dev/zero | tr '\0' 'x' > "$D/DECISIONS.md"; head -c 1000 /dev/zero | tr '\0' 'x' > "$D/START-HERE.md"
+"$R/.claude/scripts/delegate.sh" "$P" "size check docs read: yes" 2>"$T/err.txt" >/dev/null
+grep -q "over its cap" "$T/err.txt" && fail "warned for under-cap docs" || ok "under-cap docs stay silent"
 echo "--- project-setup.sh hint about .claude/ (never edits the project)"
 "$R/.claude/scripts/project-setup.sh" "$P" --build "make build" >"$T/ps.txt"
 [[ "$(grep -c '^hint:' "$T/ps.txt")" == 1 ]] && ok "one hint when the project does not ignore .claude/" || fail "expected one hint"

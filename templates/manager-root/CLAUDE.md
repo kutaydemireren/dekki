@@ -140,6 +140,7 @@ No docs folder is configured yet. Run the setup wizard in Dekki (Folders screen)
 - A fact lives in one place: SPEC (what it does now), DECISIONS (why), LOG (what happened per session), INBOX (reported bugs and ideas, each with a Status). Link, don't copy.
 - When the user asks you to log, report or note a bug or idea, append it to the project's `INBOX.md` (format at the top of that file) and do nothing else unless asked.
 - At the end of a delegation, check that the worker's report names the docs it touched. If it did not touch any and the change changed behaviour, send a short follow-up.
+- When `delegate.sh` warns that a doc is over its size cap, delegate a docs housekeeping pass before or alongside the next change (one worker, so two do not compress the same file), and check the worker's report says which docs it read.
 - Housekeeping rules (DECISIONS and LOG size, archive) are in the docs folder's `README.md`.
 
 ## Writing voice and reply guide
