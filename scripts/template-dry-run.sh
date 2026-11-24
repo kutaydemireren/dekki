@@ -29,7 +29,7 @@ if [ "$1" = agents ]; then exit 0; fi
 if [ -n "${STUB_FAIL:-}" ]; then echo "$STUB_FAIL"; exit 1; fi
 { echo "PWD=$PWD"; echo "CLAUDE_CONFIG_DIR=${CLAUDE_CONFIG_DIR:-}"; echo "ARGS=$*"; } >> "$STUB_REC"
 printf '%s\0' "$@" > "$STUB_ARGS"
-echo "started 0123abcd"
+echo "claude attach ${STUB_NEW_ID:-0123abcd}"
 S
 chmod +x "$T/bin/claude"
 export STUB_REC="$T/rec.txt" STUB_ARGS="$T/args.bin" HOME="$T/home" PATH="$T/bin:$PATH" CLAUDE_CONFIG_DIR="$T/cfg" CLAUDE_JOB_DIR="$T/jobs/deadbeef"
@@ -49,7 +49,14 @@ process.exit(denied(rules, process.argv[2]) ? 0 : 1);" "$1" "$2"
 echo "=== 1. old root: no harness.json, new worker and --resume"
 "$R/.claude/scripts/delegate.sh" "$P" "trivial brief" --name x
 touch "$T/cfg/projects/p/0123abcd-full-session.jsonl"
-"$R/.claude/scripts/delegate.sh" --resume 0123abcd "$P" "follow up"
+"$R/.claude/scripts/delegate.sh" --resume 0123abcd "$P" "follow up" 2>"$T/resume-err.txt"
+RA="$(node -e 'console.log(require("fs").readFileSync(process.argv[1],"utf8").split("\0").slice(0,-1).join(" "))' "$STUB_ARGS")"
+[[ "$RA" == "--bg --resume 0123abcd-full-session follow up" ]] && ok "flagless resume passes no --effort/--settings/--permission-mode" || fail "flagless resume args: $RA"
+grep -q "COPY" "$T/resume-err.txt" && fail "flagless resume printed the copy note" || ok "flagless resume prints no copy note"
+STUB_NEW_ID=feedbeef "$R/.claude/scripts/delegate.sh" --resume 0123abcd "$P" "again" --effort high 2>"$T/resume-err.txt"
+RA="$(node -e 'console.log(require("fs").readFileSync(process.argv[1],"utf8").split("\0").slice(0,-1).join(" "))' "$STUB_ARGS")"
+[[ "$RA" == *"--effort high"* && "$RA" == *"--settings "* && "$RA" == *"--permission-mode auto"* ]] && ok "resume --effort passes --effort, --settings and --permission-mode auto" || fail "resume --effort args: $RA"
+grep -q "starts a COPY" "$T/resume-err.txt" && ok "resume --effort prints the copy note" || fail "no copy note with --effort"
 echo "--- recorded"
 sed -E 's#--settings [^ ]+#--settings <DENY>#; s#(PWD|CLAUDE_CONFIG_DIR)=.*/(root|cfg)#\1=<tmp>/\2#; s/Report contract.*/<contract...>/' "$T/rec.txt" | cut -c1-230
 echo "--- links.tsv"; cat "$T/home/.dekki/links.tsv"

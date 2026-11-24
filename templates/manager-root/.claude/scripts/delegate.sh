@@ -4,6 +4,8 @@
 #
 #   delegate.sh <project> "<brief>" [--name <slug>] [--effort <level>]
 #   delegate.sh --resume <id> <project> "<follow-up>" [--effort <level>]   # only for a worker that has exited; a live one gets SendMessage
+#       without --effort the SAME session continues (same id, its saved name, permission mode, deny rules and effort);
+#       with --effort the CLI starts a COPY under a new id, which gets --permission-mode auto and the deny rules like a new worker
 #   delegate.sh --check [<project>]    # validate .claude/harness.json, render the worker settings, print what a brief gets; starts nothing
 #
 # Workers start at medium effort whatever the manager session or settings.json say; ask for
@@ -124,17 +126,21 @@ check_project_name() {
 render_settings() { node "$HARNESS" render "$ROOT" || exit 1; }
 
 if [[ "${1:-}" == "--resume" ]]; then
-  # `claude --bg --resume` forks a NEW session from the transcript, it does not continue a live worker.
-  # So: only for a worker that has exited, and always from inside its project folder.
+  # Only for a worker that has exited, always from inside its project folder.
+  # Verified with the CLI: `claude --bg --resume <full id>` with NO flags wakes that same session with its saved options
+  # (name, permission mode, --settings deny rules, effort, model). Any flag (--effort here) makes the CLI start a COPY under
+  # a new id that keeps only the flags passed now, and a still-running session is copied too. A copy is therefore given
+  # --permission-mode auto and --settings like a new worker, and is linked under its own new id.
   [[ $# -ge 4 ]] || usage
   id="$2"; project="${3%/}"; msg="$4"; shift 4
+  copy_effort=""
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      --effort) EFFORT="${2:?--effort needs a value}"; shift 2 ;;
+      --effort) copy_effort="${2:?--effort needs a value}"; shift 2 ;;
       *) usage ;;
     esac
   done
-  check_effort "$EFFORT"
+  [[ -z "$copy_effort" ]] || check_effort "$copy_effort"
   check_project_name "$project"
   dir="$ROOT/$project"
   [[ -d "$dir" ]] || { echo "No such project folder: $dir" >&2; exit 1; }
@@ -145,11 +151,19 @@ if [[ "${1:-}" == "--resume" ]]; then
   # transcripts live under ${CLAUDE_CONFIG_DIR:-$HOME/.claude}/projects
   full="$(basename "$(ls "${CLAUDE_CONFIG_DIR:-$HOME/.claude}"/projects/*/"$id"-*.jsonl 2>/dev/null | head -1)" .jsonl)"
   [[ -n "$full" ]] || { echo "No transcript found for $id" >&2; exit 1; }
-  render_settings
-  cd "$dir"
-  out="$(claude --bg --effort "$EFFORT" --settings "$DENY" --resume "$full" "$msg" 2>&1)" || claude_failed "$out" "$dir" ""
+  if [[ -n "$copy_effort" ]]; then
+    echo "note: --effort starts a COPY of $id with effort $copy_effort (new id, not the same session). Drop --effort to continue $id itself with its saved options." >&2
+    render_settings
+    cd "$dir"
+    out="$(claude --bg --effort "$copy_effort" --settings "$DENY" --permission-mode auto --resume "$full" "$msg" 2>&1)" || claude_failed "$out" "$dir" ""
+  else
+    cd "$dir"
+    out="$(claude --bg --resume "$full" "$msg" 2>&1)" || claude_failed "$out" "$dir" ""
+  fi
   echo "$out"
-  link "$out" || true
+  # Link only an id the CLI actually started: the same session is linked already, a copy is new.
+  nid="$(new_id "$out")"
+  if [[ -n "$nid" && "$nid" != "$id" ]]; then link "$out" || true; fi
   printf '%s\tresume\t%s\t%s\n' "$(date -u +%FT%TZ)" "$id" "$msg" >> "$LOG"
   exit 0
 fi
