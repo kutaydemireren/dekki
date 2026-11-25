@@ -205,7 +205,7 @@ export function userText(text) {
   return segments.some((g) => g.pasted) ? { ...item, segments } : item;
 }
 
-const KNOWN_LEADING =new Set(['user', 'assistant', 'ai-title', 'custom-title', 'agent-name']);
+const KNOWN_LEADING = new Set(['user', 'assistant', 'attachment', 'ai-title', 'custom-title', 'agent-name']);
 const LEADING_TYPE_RE = /^\{"type":"([^"]+)"/;
 
 // ---- parser ----
@@ -288,6 +288,22 @@ export function createParser() {
     items.forEach((item, i) => put({ id: i ? `u:${r.uuid}:${i}` : `u:${r.uuid}`, k: item.k, ts, text: item.text, ...(item.segments && { segments: item.segments }) }));
   }
 
+  // A message the user sent while the agent was working and that was absorbed mid-turn is not a "user" record:
+  // Claude stores it as an attachment {type:'queued_command', prompt, origin:{kind}, source_uuid, delivery_id, timestamp}.
+  // Only human-origin ones are shown (task notifications and cross-session notices carry another origin kind).
+  function onQueued(r) {
+    const a = r.attachment;
+    if (!isObj(a) || a.type !== 'queued_command' || !isObj(a.origin) || a.origin.kind !== 'human') return;
+    if (typeof a.prompt !== 'string' || !a.prompt.trim()) return;
+    const key = [a.source_uuid, a.delivery_id, r.uuid].find((k) => typeof k === 'string' && k);
+    if (!key) return;
+    const item = userText(a.prompt);
+    if (item?.k !== 'user') return;
+    const ts = typeof a.timestamp === 'string' ? a.timestamp : (r.timestamp ?? null);
+    // the same message recorded as a normal user row with uuid = source_uuid reuses this id, so it shows once
+    put({ id: `u:${key}`, k: 'user', ts, text: item.text, ...(item.segments && { segments: item.segments }) });
+  }
+
   function onAssistant(r) {
     if (r.isSidechain) return;
     const content = r.message?.content;
@@ -327,6 +343,8 @@ export function createParser() {
         return onUser(r);
       case 'assistant':
         return onAssistant(r);
+      case 'attachment':
+        return onQueued(r);
       case 'custom-title':
         if (typeof r.customTitle === 'string') meta.title = r.customTitle;
         return;
@@ -433,8 +451,10 @@ export function lastRealActivity(file) {
         for (let i = lines.length - 1; i >= 0 && ts === null; i--) {
           try {
             const r = JSON.parse(lines[i]);
-            if ((r?.type === 'user' || r?.type === 'assistant') && !r.isMeta && !r.isSidechain && typeof r.timestamp === 'string') {
-              const t = Date.parse(r.timestamp);
+            const queued = r?.type === 'attachment' && r.attachment?.type === 'queued_command' && r.attachment.origin?.kind === 'human';
+            const stamp = queued ? (r.attachment.timestamp ?? r.timestamp) : r?.timestamp;
+            if (typeof stamp === 'string' && (queued || ((r?.type === 'user' || r?.type === 'assistant') && !r.isMeta && !r.isSidechain))) {
+              const t = Date.parse(stamp);
               if (Number.isFinite(t)) ts = t;
             }
           } catch { /* partial or malformed line: keep looking */ }
