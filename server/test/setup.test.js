@@ -8,6 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+import { firstBanned } from './banlist.js';
 
 const tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'dekki-setup-test-')));
 process.env.DEKKI_STATE = path.join(tmp, '.dekki', 'state.json'); // the health check looks for this dir name in delegate.sh
@@ -824,6 +825,5 @@ test('the wizard files carry no product, company or personal names', () => {
   const repo = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
   const files = ['server/setup.js', 'web/SetupWizard.jsx', 'web/setup-ui.js'].filter((f) => fs.existsSync(path.join(repo, f)));
   assert.ok(files.length >= 1);
-  const banned = /REDACTED|REDACTED|REDACTED|REDACTED|REDACTED|REDACTED|REDACTED|REDACTED|kutay|\/Users\//i;
-  for (const f of files) assert.doesNotMatch(fs.readFileSync(path.join(repo, f), 'utf8'), banned, f);
+  for (const f of files) assert.equal(firstBanned(fs.readFileSync(path.join(repo, f), 'utf8')), null, `${f} mentions a banned term`);
 });
