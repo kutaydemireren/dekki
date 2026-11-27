@@ -58,6 +58,8 @@ Before anything is written, the review screen lists what would be created, left 
 
 The pattern that works for me is: give agents somewhere to put what they learn, and read it later. For example, add a `FINDINGS.md` to a project's docs and add one line to the playbook: "When you learn something about this project that is not obvious from the code (how a service really behaves, a trap, a fact you verified), add it to FINDINGS.md with how you checked it, and say 'unverified' when you did not." Then workers report discoveries into one file instead of burying them in a transcript, and I can read the file when I want to know what the agents have found out. The same idea works for a `GLOSSARY.md`, a `RUNBOOK.md` or a list of known flaky tests.
 
+To measure your own setup, the template also installs an optional check-in script. Run `python3 -I .claude/scripts/quality-baseline.py --since YYYY-MM-DD` from your working folder. It prints about ten lines from your session transcripts: how many workers ended with a proper `result:` / `needs input:` / `failed:` report, how often you had to follow up or correct them, how often the Stop hook asked for a rewrite, and how much of the cost sits in the top 10% of sessions. Use the numbers to decide what to tighten in your playbook. It is read-only, writes nothing, sends nothing anywhere, and never runs on its own: no schedule, no notifications.
+
 Two cautions. Keep each new doc owned by one kind of fact, so it does not drift into a second copy of SPEC. And keep the first-read set small: START-HERE should point to the new file, not quote it.
 
 ## What I have not solved
