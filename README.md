@@ -1,34 +1,29 @@
 # Dekki
 
-Dekki is a local web UI for Claude Code background agents: see every agent at a glance, read its full history, and jump into its live session.
+If you already run several Claude Code agents at once, Dekki gives that a structure: one manager agent that you talk to, isolated workers that do the work, and one place that shows which of them need you. If you have never delegated to agents, it is a way to start that way.
 
-![Dekki showing an agent's History tab, dark theme](docs/screenshots/hero-dark.png)
+![Dekki showing a manager agent with its workers, dark theme](docs/screenshots/hero-dark.png)
 
-Dekki runs on your machine, talks to the `claude` CLI, and shows what `claude agents` shows in a terminal, with a longer memory and a layout that makes it clear which agents need you.
+I built it around one way of working: I tell a manager what I want, and I step in only where a decision is mine. This is the short version. The longer one, with the setup behind it, is in [docs/APPROACH.md](docs/APPROACH.md).
 
-## What it does
+## The approach
 
-- **Agent list** grouped by what matters: needs you, working, done today, older. Each row has a status glyph, project and branch, and the question an agent is waiting on. Manager agents show a bar of their workers. A Status | Project switch regroups the list by project.
-- **Session tab**: the real Claude Code terminal for the selected agent (it attaches with `claude attach`), so you can answer an agent without leaving the page.
-- **History tab**: the full transcript read from Claude's session files, with no terminal scrollback limit. Consecutive tool calls fold into one line, edits show as diffs, and a closing `result:`, `needs input:` or `failed:` line gets its own card. Summary, Normal and Verbose views.
-- **Command palette** (`Cmd+K`) to jump to any agent or run an action, plus keyboard navigation.
-- **Mission-control home** with counts and the agents waiting on you.
-- **Skill and tool stats** per agent and across all sessions.
-- **Saved prompts**: markdown files in a folder, usable when you start a new agent.
-- **Several Claude accounts**, each with its own config directory and working folder.
-- **Notifications** when an agent needs you or finishes (macOS only, see below).
-- Dark and light themes, with a System setting that follows the OS.
+- **Goals, not folders.** You say what you want. The manager works out which projects are involved and states its plan before it starts.
+- **One manager, isolated workers.** The manager delegates and does not edit code. Each worker runs in its own project folder, in its own git worktree and branch.
+- **Evidence sized to the change.** A small script reads the diff and sets how much checking it needs: nothing for docs, a build and lint for a removal, scoped tests for new logic, the full suite for anything sensitive.
+- **Every change leaves a trace.** Short docs outside the repo say what is true now, why, and what happened, so the next agent can pick up where the last one stopped.
+- **A person decides what is irreversible.** Pushes to protected branches, merges, releases and deletes stay with you. Workers report back with `result:`, `needs input:` or `failed:`, and the manager asks you.
 
-How it is built:
+## What you get
 
-- It drives the `claude` CLI (`claude agents`, `claude attach`, `claude --bg`, `claude rm`). It does not reimplement Claude Code.
-- It binds to `127.0.0.1` only and checks the Host and Origin headers on every request and WebSocket, so other websites in your browser cannot reach it.
-- No database. The only state is one small JSON file (`~/.dekki/state.json`) holding pins, archived agents, custom names and settings.
-- Few dependencies: `node-pty` and `ws` on the server; React, Vite and xterm.js for the page.
+- **A setup wizard** that writes a manager playbook, delegate scripts, deny rules for risky git commands, the change-size tiers and the docs layout into your working folder. It never overwrites a file you already have.
+- **A local app** that watches your Claude Code agents. It groups them by what matters (needs you, working, done, older), shows each manager's workers as a bar, and lets you read any agent's full history or answer it in its live terminal.
 
-How I work with agents (a manager that delegates, isolated workers, evidence sized by the change, short docs) and how to adapt it: [docs/APPROACH.md](docs/APPROACH.md).
+Dekki runs on your machine and drives the `claude` CLI; it does not reimplement Claude Code. It is a single-user tool: it listens on `127.0.0.1` only and has no authentication (see [Safety and notes](#safety-and-notes)).
 
 ## Quick start
+
+You need Node 22.12 or newer and the `claude` CLI signed in (details under [Requirements](#requirements)).
 
 ```
 npm install
@@ -49,11 +44,37 @@ DEKKI_DEMO=1 PORT=4350 npm start
 
 Start, stop, delete and upload are switched off in demo mode. Add `DEKKI_DEMO_ACCOUNTS=2` to show two made-up accounts and the account switcher.
 
-## First-time setup
+## Set up your manager
 
-The first time you open Dekki, the home screen offers a **Set up** button (it is also in the command palette). A four-step wizard asks for your working folder (the folder that holds your projects), a docs folder (no default, you choose), a few preferences (reply style, autonomy, git habits, language) and what must stay safe. It writes a manager playbook and delegate scripts into the working folder. It never overwrites a file and never edits an existing `CLAUDE.md` unless you tick the box for it. It ends with a health check and tells you which folders to trust once. Background: [docs/APPROACH.md](docs/APPROACH.md).
+The first time you open Dekki, the home screen offers a **Set up** button (it is also in the command palette). A four-step wizard asks for your working folder (the folder that holds your projects), a docs folder (no default, you choose), a few preferences (reply style, autonomy, git habits, language) and what must stay safe. It writes a manager playbook and delegate scripts into the working folder. It never overwrites a file and never edits an existing `CLAUDE.md` unless you tick the box for it. It ends with a health check and tells you which folders to trust once. What each file is for: [docs/APPROACH.md](docs/APPROACH.md).
 
 ![The first screen of the setup wizard, dark theme](docs/screenshots/setup-wizard.png)
+
+## What the app does
+
+- **Agent list** grouped by what matters: needs you, working, done today, older. Each row has a status glyph, project and branch, and the question an agent is waiting on. Manager agents show a bar of their workers. A Status | Project switch regroups the list by project.
+- **Session tab**: the real Claude Code terminal for the selected agent (it attaches with `claude attach`), so you can answer an agent without leaving the page.
+- **History tab**: the full transcript read from Claude's session files, with no terminal scrollback limit. Consecutive tool calls fold into one line, edits show as diffs, and a closing `result:`, `needs input:` or `failed:` line gets its own card. Summary, Normal and Verbose views.
+- **Command palette** (`Cmd+K`) to jump to any agent or run an action, plus keyboard navigation.
+- **Mission-control home** with counts and the agents waiting on you.
+- **Skill and tool stats** per agent and across all sessions.
+- **Saved prompts**: markdown files in a folder, usable when you start a new agent.
+- **Several Claude accounts**, each with its own config directory and working folder.
+- **Notifications** when an agent needs you or finishes (macOS only, see below).
+- Dark and light themes, with a System setting that follows the OS.
+
+How it is built:
+
+- It drives the `claude` CLI (`claude agents`, `claude attach`, `claude --bg`, `claude rm`). It does not reimplement Claude Code.
+- It binds to `127.0.0.1` only and checks the Host and Origin headers on every request and WebSocket, so other websites in your browser cannot reach it.
+- No database. The only state is one small JSON file (`~/.dekki/state.json`) holding pins, archived agents, custom names and settings.
+- Few dependencies: `node-pty` and `ws` on the server; React, Vite and xterm.js for the page.
+
+## Make it yours
+
+The playbook is a solid baseline, not a finished system. Everyone works differently, so change it: re-run the wizard, edit the playbook text, or adjust the tiers and the docs rules ([how](docs/APPROACH.md#how-to-adapt-it)). You can also ask the manager to propose improvements to its own rules. It suggests, you approve.
+
+Dekki works with Claude Code only. The way of working is not tied to it and you can borrow it for another tool, but the app and the setup are not portable.
 
 ## Multiple Claude accounts
 
