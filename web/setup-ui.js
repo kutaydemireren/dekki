@@ -140,6 +140,13 @@ export function resultLines(r) {
   return lines;
 }
 
+/** The calm line under the result screen: the setup is a baseline, with a pointer to the README section. */
+export const BASELINE_NOTE = {
+  text: 'This setup is a baseline to adapt to the way you work.',
+  linkText: 'Make it yours',
+  href: 'https://github.com/kutaydemireren/dekki#make-it-yours',
+};
+
 /** The CLAUDE.md heads-up to show, or null: only when the file exists and the setup blocks cannot be written into it. */
 export function claudeNotice(preview) {
   const m = preview?.claude?.markers;

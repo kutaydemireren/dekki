@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Dialog from './Dialog.jsx';
 import ConfirmDialog from './ConfirmDialog.jsx';
-import { STEPS, PREF_ROWS, initialForm, buildRequest, isDirty, addBranches, removeBranch, foldersError, resetScreen, applyReuse, fileLabel, fileName, reviewCounts, claudeNotice, healthMark, wizardTitle, trustView, resultLines } from './setup-ui.js';
+import { STEPS, PREF_ROWS, initialForm, buildRequest, isDirty, addBranches, removeBranch, foldersError, resetScreen, applyReuse, fileLabel, fileName, reviewCounts, claudeNotice, healthMark, wizardTitle, trustView, resultLines, BASELINE_NOTE } from './setup-ui.js';
 
 // Setup wizard: four screens (Folders, Preferences, Safety, Review and create) for the ACTIVE account, then the health check.
 // mode "check" shows only the health check. The server does all validation and writing (server/setup.js); this file is the form.
@@ -407,6 +407,7 @@ export default function SetupWizard({ mode = 'setup', onClose, onChanged, onSetu
             <TrustBlock trust={result.trust} />
             {health ? <HealthList items={health.items} /> : <div className="hint">Checking…</div>}
             {health && !health.ok && <div className="hint">Fix what is marked, then press Check again.</div>}
+            <div className="hint">{BASELINE_NOTE.text} <a href={BASELINE_NOTE.href} target="_blank" rel="noopener noreferrer">{BASELINE_NOTE.linkText}</a></div>
           </>
         )}
         {err && <div className="err">{err}</div>}
