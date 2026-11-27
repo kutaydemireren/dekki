@@ -65,6 +65,13 @@ test('playbook: three marked blocks, project setup and tier sections, no stale r
   assert.ok(md.includes('project-setup.sh'));
   assert.ok(md.includes('VISUAL=required'));
   assert.ok(md.length > 14000, 'playbook stays full size');
+  // the baseline section: outside the wizard's blocks, proposes via the question prompt, edits only after approval
+  const at = md.indexOf('## This playbook is a baseline');
+  assert.ok(at > 0, 'baseline section exists');
+  const sec = md.slice(at, md.indexOf('\n## ', at + 5));
+  for (const needle of ['baseline', '`AskUserQuestion`', 'only after the user approves', 'never silently']) assert.ok(sec.includes(needle), needle);
+  assert.ok(sec.length < 700, 'baseline section stays short');
+  for (const b of ['preferences', 'guardrails', 'docs']) assert.ok(at < md.indexOf(`<!-- setup:${b}:start -->`) || at > md.indexOf(`<!-- setup:${b}:end -->`), `baseline section is outside the ${b} block`);
   // every script the playbook names exists in the template
   for (const s of new Set(md.match(/\.claude\/scripts\/[a-z-]+\.(sh|py|mjs)/g))) assert.ok(fs.existsSync(path.join(TEMPLATE, s)), `${s} is named in the playbook but missing`);
 });

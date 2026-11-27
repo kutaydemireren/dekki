@@ -147,3 +147,13 @@ test('trustView: docs row first, one sentence, the commands as given, an overflo
   assert.equal(U.trustView({ dirs: [{ kind: 'docs', name: '/d', path: '/d', command: 'x' }], more: 0 }).more, null);
   assert.match(U.trustView({ dirs: [{ kind: 'docs', name: '/d', path: '/d', command: 'x' }], more: 1 }).more, /^1 more git repo in/);
 });
+
+test('BASELINE_NOTE: calm line with the public README link, shown on the result screen', async () => {
+  assert.equal(U.BASELINE_NOTE.href, 'https://github.com/kutaydemireren/dekki#make-it-yours');
+  assert.equal(U.BASELINE_NOTE.linkText, 'Make it yours');
+  assert.match(U.BASELINE_NOTE.text, /baseline/);
+  const fs = await import('node:fs');
+  const jsx = fs.readFileSync(new URL('../../web/SetupWizard.jsx', import.meta.url), 'utf8');
+  const result = jsx.slice(jsx.indexOf('step === 3 && result'));
+  assert.ok(result.includes('BASELINE_NOTE.text') && result.includes('BASELINE_NOTE.href'));
+});

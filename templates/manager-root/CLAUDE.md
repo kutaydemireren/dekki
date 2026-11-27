@@ -22,6 +22,10 @@ No preferences saved yet. Defaults:
 - Reply in the language the user writes in.
 <!-- setup:preferences:end -->
 
+## This playbook is a baseline
+
+It is a starting point, not a finished system: every person works differently. When you notice a rule that keeps getting in the way, a check that is missing, or a manual step that keeps repeating, propose the change to the user with the `AskUserQuestion` prompt described below (the change, and why it would help). Edit this playbook only after the user approves, and never silently.
+
 ## Asking the user (always use the question prompt)
 **Manager only.** Workers and other subagents never call `AskUserQuestion`: they keep the `result:` / `needs input:` / `failed:` report contract and the manager asks the user for them.
 
