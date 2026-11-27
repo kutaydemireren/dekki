@@ -28,6 +28,8 @@ npm test
 
 This is `node --test server/test/*.test.js`. Two test files use fixed ports and fail with `EADDRINUSE` if something else holds them: `root.test.js` uses 4398 and `security.test.js` uses 4399. Rerun them alone if they clash.
 
+Some tests fail if a shipped file (the template, the setup wizard files, `docs/APPROACH.md`) contains private wording. The generic part of that check is built in (`server/test/banlist.js`). Your own private terms, for example an employer, a product or a username, come from a local file that is never committed: one word or regular expression per line, blank lines and lines starting with `#` ignored, matched case-insensitively. The default location is `~/.dekki/test-banlist.txt`; set `DEKKI_TEST_BANLIST` to use another path. Example lines: `ExampleCorp`, `proj-\d+`. Without the file the tests still pass, print a one-line note and run only the built-in checks.
+
 Browser checks live in `scripts/` (see `scripts/README.md`). They drive headless Edge or Chrome; set `DECK_TEST_BROWSER` to the browser executable if it is not at the default macOS Edge path. Run `npm run build` first.
 
 ## Safety rules for tests and scripts

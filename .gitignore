@@ -10,3 +10,4 @@ CLAUDE.local.md
 coverage/
 mac/icon/contact.png
 mac/icon/preview.png
+test-banlist*.txt

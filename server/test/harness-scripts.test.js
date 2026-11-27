@@ -8,6 +8,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { firstBanned } from './banlist.js';
 
 const REPO = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const TEMPLATE = path.join(REPO, 'templates', 'manager-root');
@@ -25,13 +26,12 @@ function listFiles(dir) {
 // ---- hygiene -------------------------------------------------------------------------------------------------
 
 test('template: no private or project-specific wording in any shipped file', () => {
-  const words = /Canyon|Strava|ECLIPS|Jira|Lokalise|Apidog|Contentful|\biOS\b|\bAndroid\b|\bXcode|Swift|Kotlin|\bBLE\b|Bluetooth|firmware|SIMULATOR|Simulator|simulator|kdemireren|Kutay|\/Users\/|Obsidian|vault|caveman|voice-check|device-hygiene|WDD-/;
   const files = listFiles(TEMPLATE);
   assert.ok(files.length >= 19, `expected the full template, found ${files.length} files`);
   for (const f of files) {
     const text = fs.readFileSync(f, 'utf8');
-    const m = words.exec(text);
-    assert.equal(m, null, `${path.relative(TEMPLATE, f)} mentions "${m && m[0]}"`);
+    const m = firstBanned(text, { template: true });
+    assert.equal(m, null, `${path.relative(TEMPLATE, f)} mentions "${m}"`);
   }
 });
 
@@ -606,7 +606,7 @@ test('approach page: linked from the README, no private wording, covers the agre
   const page = fs.readFileSync(path.join(REPO, 'docs', 'APPROACH.md'), 'utf8');
   const readme = fs.readFileSync(path.join(REPO, 'README.md'), 'utf8');
   assert.ok(readme.includes('](docs/APPROACH.md)'), 'README links the page');
-  assert.doesNotMatch(page, /Canyon|Strava|ECLIPS|Jira|Lokalise|Apidog|Contentful|kdemireren|Kutay|\/Users\/|Obsidian/);
+  assert.equal(firstBanned(page), null, 'approach page mentions a banned term');
   for (const needle of ['FINDINGS.md', 'per Claude account', 'tier', 'protected branches']) assert.ok(page.toLowerCase().includes(needle.toLowerCase()), needle);
 });
 
